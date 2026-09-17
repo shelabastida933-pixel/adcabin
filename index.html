@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投流舱 AdCabin — 你只管定目标，舱长负责跑量</title>
+<meta name="description" content="微信里说一句话，AI 舱长接管巨量引擎的出价、预算、素材、计划与数据复盘。不用学后台，不用招投手。">
+<script>document.documentElement.className += ' js';</script>
+<style>
+:root{
+  --bg:#070B1A; --bg2:#0A0F26; --panel:#0E1430; --panel2:#141C44;
+  --line:rgba(74,125,255,.18); --line2:rgba(255,255,255,.07);
+  --accent:#4A7DFF; --accent2:#7C4DFF; --cyan:#22D3EE;
+  --txt:#E8ECF8; --muted:#8B9DD8; --dim:#5C6A96;
+  --green:#22C55E; --amber:#F59E0B; --red:#EF4444;
+  --wx-green:#95EC69; --wx-bg:#EDEDED;
+  --r:16px; --maxw:1180px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.7; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+/* ---------- 背景光效 ---------- */
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-fx::before{
+  content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:1400px;height:1400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,125,255,.18) 0%,rgba(124,77,255,.10) 35%,transparent 68%);
+  filter:blur(20px);
+}
+.bg-fx::after{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(74,125,255,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(74,125,255,.055) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 25%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 25%,transparent 75%);
+}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none;opacity:.5}
+.orb.a{width:480px;height:480px;background:rgba(74,125,255,.30);top:38%;left:-160px}
+.orb.b{width:420px;height:420px;background:rgba(124,77,255,.24);top:68%;right:-140px}
+.wrap{position:relative;z-index:1}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* ---------- 导航 ---------- */
+nav{
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(7,11,26,.72);border-bottom:1px solid var(--line2);
+}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.3px;text-decoration:none;color:var(--txt)}
+.logo svg{width:30px;height:30px;flex:none}
+.nav-links{display:flex;gap:26px;font-size:14.5px}
+.nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--txt)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 22px;border-radius:11px;font-size:14.5px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  box-shadow:0 8px 26px -8px rgba(74,125,255,.75);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(74,125,255,.9)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--line2)}
+.btn-ghost:hover{background:rgba(255,255,255,.10);border-color:var(--line)}
+
+/* ---------- Hero ---------- */
+header{padding:92px 0 84px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:center}
+.badge{
+  display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:100px;
+  border:1px solid var(--line);background:rgba(74,125,255,.10);
+  color:#9DB8FF;font-size:13px;font-weight:600;margin-bottom:26px;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(34,197,94,.65);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+h1{
+  font-size:clamp(34px,5vw,56px);line-height:1.16;letter-spacing:-1.4px;
+  font-weight:800;margin-bottom:22px;
+}
+.grad{
+  background:linear-gradient(115deg,#7EA6FF 0%,#4A7DFF 32%,#A78BFA 68%,#22D3EE 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:220% auto;animation:shine 7s linear infinite;
+}
+@keyframes shine{to{background-position:220% center}}
+.lede{font-size:16.5px;color:var(--muted);max-width:520px;margin-bottom:32px}
+.lede b{color:var(--txt);font-weight:600}
+.hero-cta{display:flex;gap:13px;flex-wrap:wrap;margin-bottom:34px}
+.hero-facts{display:flex;gap:30px;flex-wrap:wrap;padding-top:26px;border-top:1px solid var(--line2)}
+.hf b{display:block;font-size:25px;font-weight:800;letter-spacing:-.6px}
+.hf span{font-size:12.5px;color:var(--dim)}
+
+/* ---------- 手机 mockup ---------- */
+.phone-wrap{display:flex;justify-content:center;perspective:1400px}
+.phone{
+  width:340px;max-width:100%;border-radius:40px;padding:11px;
+  background:linear-gradient(160deg,#232C55,#0C1130);
+  box-shadow:0 50px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.09),
+             inset 0 1px 0 rgba(255,255,255,.16);
+  transform:rotateY(-9deg) rotateX(5deg);transition:transform .5s ease;
+}
+.phone:hover{transform:rotateY(0) rotateX(0)}
+.screen{border-radius:30px;overflow:hidden;background:var(--wx-bg);display:flex;flex-direction:column;height:600px}
+.wx-top{
+  background:#F7F7F7;padding:11px 15px;display:flex;align-items:center;gap:9px;
+  border-bottom:1px solid #DCDCDC;flex:none;
+}
+.wx-back{color:#333;font-size:17px;line-height:1}
+.wx-title{font-weight:600;font-size:14.5px;color:#111;display:flex;align-items:center;gap:6px}
+.wx-avatar{
+  width:26px;height:26px;border-radius:7px;flex:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;
+}
+.wx-body{
+  flex:1;padding:15px 12px;overflow-y:auto;background:var(--wx-bg);
+  display:flex;flex-direction:column;gap:13px;scrollbar-width:none;
+}
+.wx-body::-webkit-scrollbar{display:none}
+.msg{display:flex;gap:8px;max-width:100%}
+.msg.user{flex-direction:row-reverse}
+.bub{
+  padding:9px 12px;border-radius:7px;font-size:12.6px;line-height:1.55;
+  color:#111;max-width:245px;box-shadow:0 1px 1px rgba(0,0,0,.05);word-break:break-word;
+}
+.msg.user .bub{background:var(--wx-green)}
+.msg.bot .bub{background:#fff}
+.msg.bot .bub strong{color:#0B63D6;font-weight:600}
+.av{width:29px;height:29px;border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.av.bot{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.av.me{background:#4B5563}
+.wx-time{text-align:center;font-size:10.5px;color:#9AA0A6;margin:2px 0}
+.typing{display:flex;gap:4px;padding:11px 13px;background:#fff;border-radius:7px;width:fit-content}
+.typing i{width:6px;height:6px;border-radius:50%;background:#B8BDC4;display:block;animation:blink 1.4s infinite}
+.typing i:nth-child(2){animation-delay:.2s}
+.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* ---------- 通用 section ---------- */
+section{padding:88px 0;position:relative}
+.eyebrow{
+  font-size:12.5px;font-weight:700;letter-spacing:2.4px;color:var(--accent);
+  text-transform:uppercase;margin-bottom:14px;
+}
+h2{font-size:clamp(26px,3.4vw,40px);line-height:1.24;letter-spacing:-.9px;font-weight:800;margin-bottom:16px}
+.sub{color:var(--muted);font-size:16px;max-width:680px}
+.center{text-align:center}
+.center .sub{margin:0 auto}
+
+/* ---------- 痛点 ---------- */
+.pains{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:46px}
+.pain{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.45));
+  border:1px solid var(--line2);border-radius:var(--r);padding:26px 24px;
+  position:relative;overflow:hidden;transition:border-color .25s,transform .25s;
+}
+.pain:hover{border-color:var(--line);transform:translateY(-4px)}
+.pain::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
+.pain .ic{font-size:23px;margin-bottom:14px;display:block}
+.pain h3{font-size:16.5px;margin-bottom:8px;font-weight:700}
+.pain p{color:var(--muted);font-size:14.3px}
+
+/* ---------- 能力 ---------- */
+.caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px;margin-top:46px}
+.cap{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.4));
+  border:1px solid var(--line2);border-radius:var(--r);padding:26px 24px;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.cap:hover{border-color:var(--line);transform:translateY(-4px);background:linear-gradient(165deg,var(--panel2),rgba(20,28,68,.5))}
+.cap .n{
+  width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(74,125,255,.22),rgba(124,77,255,.14));
+  border:1px solid var(--line);font-size:15px;font-weight:800;color:#9DB8FF;margin-bottom:16px;
+}
+.cap h3{font-size:16px;margin-bottom:9px;font-weight:700}
+.cap p{color:var(--muted);font-size:14.2px}
+
+/* ---------- 诊断数据 ---------- */
+.case{
+  background:linear-gradient(165deg,rgba(14,20,48,.9),rgba(10,15,38,.7));
+  border:1px solid var(--line);border-radius:22px;padding:42px;margin-top:44px;
+  box-shadow:0 40px 80px -40px rgba(0,0,0,.85);
+}
+.case-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:34px}
+.case-head h3{font-size:21px;font-weight:800;margin-bottom:7px}
+.case-head p{color:var(--muted);font-size:14.4px;max-width:560px}
+.tag{
+  font-size:11.5px;padding:5px 12px;border-radius:100px;font-weight:700;
+  border:1px solid;white-space:nowrap;
+}
+.tag.red{color:#FCA5A5;border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.10)}
+.tag.green{color:#86EFAC;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.10)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:34px}
+.metric{background:rgba(255,255,255,.028);border:1px solid var(--line2);border-radius:13px;padding:20px}
+.metric .v{font-size:29px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:7px}
+.metric .l{font-size:13px;color:var(--muted)}
+.metric .x{font-size:11.8px;color:var(--dim);margin-top:5px}
+.v.red{color:#F87171}.v.amber{color:#FBBF24}.v.blue{color:#60A5FA}.v.green{color:#4ADE80}
+.bars{display:flex;flex-direction:column;gap:15px;margin-top:6px}
+.bar-row{display:grid;grid-template-columns:190px 1fr 62px;align-items:center;gap:15px;font-size:13.6px}
+.bar-track{height:9px;border-radius:100px;background:rgba(255,255,255,.075);overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;transform-origin:left;animation:grow 1.3s cubic-bezier(.22,1,.36,1) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.bar-fill.r{background:linear-gradient(90deg,#EF4444,#F87171)}
+.bar-fill.a{background:linear-gradient(90deg,#F59E0B,#FBBF24)}
+.bar-fill.b{background:linear-gradient(90deg,#4A7DFF,#7EA6FF)}
+.bar-val{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.insight{
+  margin-top:34px;padding:20px 22px;border-radius:13px;
+  background:linear-gradient(100deg,rgba(74,125,255,.12),rgba(124,77,255,.05));
+  border-left:3px solid var(--accent);font-size:14.6px;color:#C9D6F5;
+}
+.insight b{color:#fff}
+
+/* ---------- 流程 ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:46px;position:relative}
+.step{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.4));
+  border:1px solid var(--line2);border-radius:var(--r);padding:30px 26px;position:relative;
+}
+.step .num{
+  font-size:44px;font-weight:800;letter-spacing:-2px;line-height:1;
+  background:linear-gradient(160deg,rgba(126,166,255,.85),rgba(124,77,255,.30));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:14px;display:block;
+}
+.step h3{font-size:17px;margin-bottom:9px;font-weight:700}
+.step p{color:var(--muted);font-size:14.3px}
+
+/* ---------- 安全 ---------- */
+.safety{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:17px;margin-top:44px}
+.sf{
+  display:flex;gap:14px;padding:21px;border-radius:14px;
+  background:rgba(34,197,94,.055);border:1px solid rgba(34,197,94,.20);
+}
+.sf .k{font-size:18px;flex:none;line-height:1.3}
+.sf h4{font-size:14.8px;margin-bottom:5px;font-weight:700}
+.sf p{font-size:13.4px;color:var(--muted)}
+
+/* ---------- 定价 ---------- */
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:46px;align-items:start}
+.plan{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.45));
+  border:1px solid var(--line2);border-radius:20px;padding:34px 30px;position:relative;
+}
+.plan.hot{
+  border-color:var(--accent);
+  background:linear-gradient(165deg,rgba(20,28,68,.95),rgba(14,20,48,.7));
+  box-shadow:0 30px 70px -30px rgba(74,125,255,.5);
+}
+.plan .ribbon{
+  position:absolute;top:-12px;right:24px;font-size:11.5px;font-weight:700;
+  padding:5px 13px;border-radius:100px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+}
+.plan h3{font-size:17.5px;margin-bottom:7px;font-weight:700}
+.plan .desc{color:var(--muted);font-size:13.6px;margin-bottom:22px;min-height:38px}
+.plan .amount{display:flex;align-items:baseline;gap:7px;margin-bottom:6px}
+.plan .amount .cur{font-size:20px;font-weight:700;color:var(--muted)}
+.plan .amount .num{font-size:44px;font-weight:800;letter-spacing:-2px;line-height:1}
+.plan .amount .per{font-size:14px;color:var(--muted)}
+.plan .note{font-size:12.8px;color:var(--dim);margin-bottom:22px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:26px}
+.plan li{display:flex;gap:10px;font-size:14.2px;color:#C9D6F5}
+.plan li::before{content:"✓";color:var(--green);font-weight:800;flex:none}
+.plan .btn{width:100%}
+.guarantee{
+  margin-top:24px;text-align:center;font-size:14px;color:var(--muted);
+  padding:17px;border-radius:13px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);
+}
+.guarantee b{color:#4ADE80}
+
+/* ---------- 合作流程 / 计费机制 ---------- */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:48px;position:relative}
+.flow::before{
+  content:"";position:absolute;top:19px;left:9%;right:9%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(74,125,255,.45),rgba(124,77,255,.45),transparent);
+}
+.fstep{position:relative;text-align:center}
+.fstep .fn{
+  width:38px;height:38px;border-radius:50%;margin:0 auto 15px;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 0 0 6px var(--bg),0 6px 18px -6px rgba(74,125,255,.8);
+}
+.fstep h4{font-size:14.8px;margin-bottom:7px;font-weight:700}
+.fstep p{font-size:13.1px;color:var(--muted);line-height:1.6}
+.fstep .tagm{
+  display:inline-block;margin-top:10px;font-size:11px;padding:3px 10px;border-radius:100px;
+  background:rgba(74,125,255,.12);border:1px solid var(--line);color:#9DB8FF;white-space:nowrap;
+}
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px}
+.pr{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.4));
+  border:1px solid var(--line2);border-radius:var(--r);padding:26px 24px;
+}
+.pr .pi{font-size:23px;display:block;margin-bottom:13px}
+.pr h4{font-size:15.6px;margin-bottom:9px;font-weight:700}
+.pr p{font-size:13.7px;color:var(--muted)}
+.rules{width:100%;border-collapse:collapse;margin-top:40px;font-size:14.2px}
+.rules th{
+  text-align:left;padding:0 16px 13px;font-size:12px;letter-spacing:1.6px;
+  color:var(--accent);text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--line);
+}
+.rules td{padding:15px 16px;border-bottom:1px solid var(--line2);color:#C9D6F5;vertical-align:top}
+.rules td:first-child{color:var(--muted);width:30%;white-space:nowrap}
+.rules tr:hover td{background:rgba(255,255,255,.022)}
+.rules .hi{color:#fff;font-weight:600}
+.qualify{
+  margin-top:34px;padding:28px;border-radius:16px;
+  background:linear-gradient(100deg,rgba(34,197,94,.09),rgba(74,125,255,.045));
+  border:1px solid rgba(34,197,94,.22);
+}
+.qualify h4{font-size:16.4px;margin-bottom:15px;color:#86EFAC;font-weight:700}
+.qualify ol{margin:0 0 18px 21px;display:flex;flex-direction:column;gap:9px;font-size:14.3px;color:#C9D6F5}
+.qualify .warn{font-size:13.4px;color:var(--muted);padding-top:15px;border-top:1px solid var(--line2);line-height:1.75}
+.qualify .warn b{color:#FBBF24}
+.qualify .warn code{
+  background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;
+  font-size:12.6px;color:#FCA5A5;font-family:ui-monospace,Consolas,monospace;
+}
+
+/* ---------- FAQ ---------- */
+.faq{max-width:820px;margin:44px auto 0;display:flex;flex-direction:column;gap:12px}
+.faq details{
+  background:rgba(255,255,255,.028);border:1px solid var(--line2);
+  border-radius:13px;overflow:hidden;transition:border-color .22s;
+}
+.faq details[open]{border-color:var(--line)}
+.faq summary{
+  padding:19px 23px;cursor:pointer;font-weight:600;font-size:15.2px;
+  list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:21px;color:var(--accent);font-weight:400;flex:none}
+.faq details[open] summary::after{content:"−"}
+.faq details p{padding:0 23px 21px;color:var(--muted);font-size:14.4px}
+
+/* ---------- 可折叠条款块（计费 / 退款细则，默认收起） ---------- */
+.toggles{
+  margin-top:26px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(165deg,rgba(20,28,68,.8),rgba(14,20,48,.55));
+  border:1px solid var(--line);transition:border-color .25s,background .25s;
+}
+.toggles[open]{border-color:rgba(74,125,255,.45);background:linear-gradient(165deg,rgba(24,33,78,.9),rgba(14,20,48,.6))}
+.toggles>summary{
+  padding:21px 24px;cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:15px;
+  font-weight:700;font-size:15.4px;color:var(--txt);
+}
+.toggles>summary::-webkit-details-marker{display:none}
+.toggles>summary:hover{background:rgba(74,125,255,.055)}
+.toggles>summary .tog-hint{margin-left:auto;font-size:12.5px;color:var(--dim);font-weight:500;white-space:nowrap}
+.toggles>summary::after{
+  content:"▾";font-size:15px;color:var(--accent);font-weight:400;flex:none;
+  transition:transform .28s cubic-bezier(.22,1,.36,1);
+}
+.toggles[open]>summary::after{transform:rotate(180deg)}
+.tog-body{padding:2px 24px 26px;border-top:1px solid var(--line2)}
+.tog-body .rules{margin-top:14px}
+.tog-body .qualify{margin-top:16px}
+@media(max-width:980px){
+  .toggles>summary{padding:18px;font-size:14.4px}
+  .toggles>summary .tog-hint{display:none}
+  .tog-body{padding:2px 18px 22px}
+}
+
+/* ---------- CTA ---------- */
+.cta-box{
+  background:linear-gradient(140deg,rgba(26,31,78,.95),rgba(45,27,105,.75));
+  border:1px solid var(--line);border-radius:26px;padding:56px 44px;
+  display:grid;grid-template-columns:1fr auto;gap:44px;align-items:center;
+  box-shadow:0 40px 90px -40px rgba(74,125,255,.45);position:relative;overflow:hidden;
+}
+.cta-box::before{
+  content:"";position:absolute;top:-50%;right:-10%;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,125,255,.26),transparent 66%);
+}
+.cta-box h2{margin-bottom:13px}
+.cta-box p{color:var(--muted);font-size:15.4px;max-width:520px}
+.qr{
+  width:210px;border-radius:18px;background:#fff;padding:14px 14px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
+  position:relative;z-index:1;box-shadow:0 26px 54px -20px rgba(0,0,0,.85);
+}
+.qr img{width:100%;height:auto;display:block;border-radius:8px}
+.qr span{font-size:12.5px;color:#4B5563;line-height:1.5;font-weight:600}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
+.foot-in{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:center}
+.foot-in p{font-size:13.2px;color:var(--dim)}
+.foot-note{font-size:12.2px;color:var(--dim);margin-top:20px;line-height:1.75;max-width:820px}
+
+/* ---------- 滚动渐入 ----------
+   注意：内容默认可见。只有 JS 成功运行时才由 .js 开启隐藏动画，
+   避免 IntersectionObserver 失败导致整站内容隐形。 */
+.reveal{opacity:1;transform:none}
+.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.js .reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .js .reveal{opacity:1;transform:none;transition:none}
+  .bar-fill{animation:none}
+  .grad{animation:none}
+}
+
+/* ---------- 顶部公告条 ---------- */
+.announce{
+  position:relative;z-index:99;
+  background:linear-gradient(90deg,rgba(45,27,105,.96),rgba(26,31,78,.96),rgba(45,27,105,.96));
+  border-bottom:1px solid rgba(251,191,36,.32);
+  color:#FDE68A;font-size:13.2px;font-weight:600;text-align:center;
+  padding:10px 18px;line-height:1.5;
+}
+.announce b{color:#FBBF24}
+.announce .sep{margin:0 10px;color:rgba(251,191,36,.45)}
+
+/* ---------- 种子客户优惠 ---------- */
+.offer{
+  margin-top:40px;border-radius:20px;padding:34px 32px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,rgba(251,191,36,.10),rgba(124,77,255,.09));
+  border:1px solid rgba(251,191,36,.34);
+}
+.offer::after{
+  content:"";position:absolute;top:-60%;right:-5%;width:440px;height:440px;border-radius:50%;
+  background:radial-gradient(circle,rgba(251,191,36,.16),transparent 65%);pointer-events:none;
+}
+.offer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.offer h3{font-size:21px;font-weight:800;margin-bottom:8px;letter-spacing:-.4px}
+.offer .osub{color:var(--muted);font-size:14.2px;max-width:560px}
+.slots{display:flex;align-items:center;gap:11px;font-size:13px;color:#FBBF24;font-weight:700;white-space:nowrap;
+  background:rgba(0,0,0,.28);padding:9px 15px;border-radius:100px;border:1px solid rgba(251,191,36,.32)}
+.slot{width:11px;height:11px;border-radius:50%;border:1.6px solid #FBBF24;display:block}
+.slot.used{background:#FBBF24;box-shadow:0 0 8px rgba(251,191,36,.7)}
+.offer-rows{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 20px;position:relative;z-index:1}
+.orow{background:rgba(0,0,0,.24);border:1px solid var(--line2);border-radius:14px;padding:19px 21px}
+.orow .lbl{font-size:13px;color:var(--muted);margin-bottom:10px}
+.orow .prices{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+.orow .was{font-size:15px;color:var(--dim);text-decoration:line-through}
+.orow .now{font-size:27px;font-weight:800;color:#FBBF24;letter-spacing:-1px}
+.orow .unit{font-size:13px;color:var(--muted)}
+.orow .save{font-size:12.4px;color:#86EFAC;margin-top:7px;font-weight:600}
+.offer-total{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:19px 22px;border-radius:14px;position:relative;z-index:1;
+  background:linear-gradient(100deg,rgba(34,197,94,.13),rgba(74,125,255,.06));
+  border:1px solid rgba(34,197,94,.28);
+}
+.offer-total .tl{font-size:14.4px;color:#C9D6F5}
+.offer-total .tv{font-size:31px;font-weight:800;color:#4ADE80;letter-spacing:-1.2px;white-space:nowrap}
+.offer-total .tv small{font-size:14px;font-weight:500;color:var(--muted);margin-left:8px;letter-spacing:0}
+.offer-asks{margin-top:22px;position:relative;z-index:1}
+.offer-asks h4{font-size:14.6px;font-weight:700;margin-bottom:12px;color:#FDE68A}
+.offer-asks ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.offer-asks li{display:flex;gap:10px;font-size:13.8px;color:#C9D6F5}
+.offer-asks li::before{content:"→";color:#FBBF24;font-weight:700;flex:none}
+.offer-fine{font-size:12.4px;color:var(--dim);margin-top:18px;position:relative;z-index:1;line-height:1.7}
+.grid-label{
+  display:flex;align-items:center;gap:14px;margin:52px 0 0;font-size:13.4px;color:var(--muted);font-weight:600;
+}
+.grid-label::after{content:"";flex:1;height:1px;background:var(--line2)}
+
+/* ---------- 响应式 ---------- */
+@media(max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:52px}
+  .phone{transform:none}
+  .pains,.steps,.principles{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr;gap:26px}
+  .flow::before{display:none}
+  .fstep{text-align:left;padding-left:52px}
+  .fstep .fn{position:absolute;left:0;top:0;margin:0}
+  .rules{font-size:13.4px}
+  .rules td:first-child{width:36%;white-space:normal}
+  .offer{padding:26px 20px}
+  .offer-rows{grid-template-columns:1fr}
+  .offer-total{flex-direction:column;align-items:flex-start;gap:10px}
+  .price-grid{grid-template-columns:1fr}
+  .cta-box{grid-template-columns:1fr;padding:40px 26px;gap:30px}
+  .qr{width:100%;max-width:220px}
+  .case{padding:28px 22px}
+  .bar-row{grid-template-columns:118px 1fr 54px;font-size:12.6px}
+  .nav-links{display:none}
+  section{padding:66px 0}
+  header{padding:60px 0 66px}
+}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div><div class="orb a"></div><div class="orb b"></div>
+
+<div class="wrap">
+<!-- ========== 顶部公告（种子客户招募） ========== -->
+<div class="announce">
+  ⚡ 种子客户招募中：<b>前 3 名立省 ¥2,000</b><span class="sep">|</span>剩余 <b>3</b> 席<span class="sep">|</span>需愿意成为可公开案例
+</div>
+
+<!-- ========== NAV ========== -->
+<nav>
+  <div class="nav-in">
+    <a href="#" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="#pain">痛点</a>
+      <a href="#caps">能力</a>
+      <a href="#case">真实数据</a>
+      <a href="#how">怎么用</a>
+      <a href="#price">价格</a>
+      <a href="#billing">计费规则</a>
+    </div>
+    <a href="#cta" class="btn btn-primary">首月不达标全退</a>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<header>
+  <div class="container hero-grid">
+    <div>
+      <div class="badge"><span class="dot"></span>已接通巨量引擎真实 API · 支持搜索与通投</div>
+      <h1>你只管定目标，<br><span class="grad">舱长负责跑量</span></h1>
+      <p class="lede">
+        在微信里说一句话，AI 舱长接管巨量引擎的<b>出价、预算、素材迭代、计划生成和数据复盘</b>。
+        不用登录后台，不用学投放，不用招投手。
+      </p>
+      <div class="hero-cta">
+        <a href="#cta" class="btn btn-primary">首月不达标，全额退 →</a>
+        <a href="#case" class="btn btn-ghost">看真实诊断数据</a>
+      </div>
+      <div class="hero-facts">
+        <div class="hf"><b class="grad">41</b><span>个账户一张表归拢</span></div>
+        <div class="hf"><b class="grad">0/0</b><span>违规单 / 用户投诉</span></div>
+        <div class="hf"><b class="grad">24h</b><span>盯盘，分钟级响应</span></div>
+      </div>
+    </div>
+
+    <!-- 手机微信对话还原（来自真实录屏） -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="screen">
+          <div class="wx-top">
+            <span class="wx-back">‹</span>
+            <div class="wx-avatar">舱</div>
+            <div class="wx-title">舱长 · 投流舱</div>
+          </div>
+          <div class="wx-body" id="wxBody">
+            <div class="wx-time">今天 09:00</div>
+            <div class="msg user"><div class="av me">我</div>
+              <div class="bub">帮我统计下昨天巨量引擎广告投放的表现数据</div></div>
+            <div class="msg bot"><div class="av bot">舱</div>
+              <div class="bub">好，拉昨天的投放数据。先确认账户清单——<strong>41 个授权账户里只有 1 个在真正投放</strong>，我从上层管理账户往下挖子账户。</div></div>
+            <div class="msg bot"><div class="av bot">舱</div>
+              <div class="bub">挖出来了：<strong>32 个账户零消耗（78%）</strong>。5 个卡在授权、15 个状态正常但没投、12 个状态异常。</div></div>
+            <div class="msg user"><div class="av me">我</div>
+              <div class="bub">广告素材这块想想怎么优化呢？</div></div>
+            <div class="msg bot"><div class="av bot">舱</div>
+              <div class="bub">按素材逐个算激活成本，结论很刺眼：<strong>28 个素材零激活，烧掉 40% 的预算</strong>。另有 5 个素材激活成本 ¥6.5–11.4，远低于账户均值 ¥19.67。</div></div>
+            <div class="msg bot"><div class="av bot">舱</div>
+              <div class="bub">还有一个信号：平均播放时长只有 <strong>2.15 秒</strong>，754 人连 25% 都没看完。问题不在投放端，在承接。</div></div>
+            <div class="msg user"><div class="av me">我</div>
+              <div class="bub">那现在最该做什么？</div></div>
+            <div class="msg bot"><div class="av bot">舱</div>
+              <div class="bub">先修承接，再加投放。同样预算激活率从 2% 提到 8%，等于激活翻 4 倍——<strong>这会比先加钱划算得多</strong>。</div></div>
+            <div class="msg bot" style="max-width:100%"><div class="av bot">舱</div>
+              <div class="typing"><i></i><i></i><i></i></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ========== 痛点 ========== -->
+<section id="pain">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">小程序创业者的投流困境</div>
+      <h2>你花钱投流，但没人告诉你<br>钱到底漏在哪</h2>
+      <p class="sub">小程序创业者大多是产品和技术背景。投放这件事，你不擅长，也没时间学——而这恰恰是最烧钱的环节。</p>
+    </div>
+    <div class="pains">
+      <div class="pain reveal">
+        <span class="ic">🕳️</span>
+        <h3>预算在无声地漏掉</h3>
+        <p>素材挂着一个月没换、计划建了项目没建单元、定向覆盖一堆不会付费的人——这些坑不会报错，只会安静地把钱花完。</p>
+      </div>
+      <div class="pain reveal">
+        <span class="ic">🧾</span>
+        <h3>投手只给你好消息</h3>
+        <p>「在优化中」「模型在学」——你永远拿不到一份直白的诊断。亏钱的时候，你通常是最后一个知道的人。</p>
+      </div>
+      <div class="pain reveal">
+        <span class="ic">⏰</span>
+        <h3>你不可能 24 小时盯盘</h3>
+        <p>计划跑飞、成本翻倍、余额告急往往发生在深夜。等你早上醒来，钱已经花完了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 能力 ========== -->
+<section id="caps">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">核心能力</div>
+      <h2>七件事，舱长全包了</h2>
+      <p class="sub">从建计划到出日报，从调出价到换素材——这些过去要一个投手团队做的事，现在都在一个微信对话里完成。</p>
+    </div>
+    <div class="caps">
+      <div class="cap reveal"><div class="n">01</div><h3>自动出价与预算调整</h3><p>分钟级盯住每个计划的成本曲线，按你给的 ROI 目标自动加减出价与预算，不用你半夜起来改价。</p></div>
+      <div class="cap reveal"><div class="n">02</div><h3>批量建立计划</h3><p>一次生成一批，把素材 × 定向 × 出价的组合铺开测试，并自动补齐项目下的投放单元——不会出现「建了项目没单元」的空壳计划。</p></div>
+      <div class="cap reveal"><div class="n">03</div><h3>复制跑量计划</h3><p>识别真正能跑的那条计划，自动复制放大；同时关掉形同虚设的僵尸计划，把预算集中到有效的地方。</p></div>
+      <div class="cap reveal"><div class="n">04</div><h3>素材诊断</h3><p>逐个素材算激活成本，按「消耗 ÷ 激活」排序，直接揪出零激活的预算黑洞，并告诉你哪些素材值得加量。</p></div>
+      <div class="cap reveal"><div class="n">05</div><h3>素材生成与批量上传</h3><p>按数据结论产出新素材变体（同主题换钩子、换节奏），批量挂载进计划，让系统持续有新鲜素材可轮换。</p></div>
+      <div class="cap reveal"><div class="n">06</div><h3>跨账户报表与数据分析</h3><p>41 个账户归拢成一张表，自动算出消耗、点击率、激活率、激活成本，并跨账户找出谁是真正的主力、谁在空转。</p></div>
+      <div class="cap reveal"><div class="n">07</div><h3>ROI 目标优化方案</h3><p>你只给一个目标（比如「ROI 干到 3」），它反推该收紧哪个人群、该换哪批素材、该怎么做出价，并落地执行。</p></div>
+      <div class="cap reveal" style="background:linear-gradient(165deg,rgba(74,125,255,.13),rgba(124,77,255,.06));border-color:var(--line)">
+        <div class="n" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none">★</div>
+        <h3>每天 9:00，日报自动推到你微信</h3>
+        <p>核心指标、转化漏斗、7 日趋势、异常诊断、建议动作——五个模块，一条消息，不用打开任何后台。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 真实数据 ========== -->
+<section id="case">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">真实诊断 · 数据已脱敏</div>
+      <h2>它不爱报喜。<br>这是它给我们自己账户的第一份诊断。</h2>
+      <p class="sub">以下全部数据来自我们自己的小程序广告账户，近 14 天真实投放。全是坏消息——但每一条都值钱。</p>
+    </div>
+
+    <div class="case reveal">
+      <div class="case-head">
+        <div>
+          <h3>近 14 天投放诊断</h3>
+          <p>账户来源：我们自营的微信小程序（AI 老照片修复类），已获授权接入巨量引擎 Marketing API。</p>
+        </div>
+        <span class="tag red">● 问题密度极高</span>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="v red">2.03%</div><div class="l">整体激活率</div><div class="x">行业正常水平 5%～10%</div></div>
+        <div class="metric"><div class="v amber">57%</div><div class="l">零转化的天数占比</div><div class="x">14 天里 8 天白花钱</div></div>
+        <div class="metric"><div class="v red">40%</div><div class="l">预算被零激活素材烧掉</div><div class="x">28 / 42 个素材零激活</div></div>
+        <div class="metric"><div class="v amber">2.15<span style="font-size:16px"> 秒</span></div><div class="l">素材平均播放时长</div><div class="x">754 人没看完 25%</div></div>
+        <div class="metric"><div class="v blue">78%</div><div class="l">授权账户零消耗</div><div class="x">41 个账户里 32 个空转</div></div>
+        <div class="metric"><div class="v green">0 / 0</div><div class="l">违规单 / 用户投诉</div><div class="x">合规底线守住了</div></div>
+      </div>
+
+      <h3 style="font-size:16px;margin-bottom:20px;color:#C9D6F5">预算去哪了：素材层激活成本分布</h3>
+      <div class="bars">
+        <div class="bar-row">
+          <span>5 个优质素材</span>
+          <div class="bar-track"><div class="bar-fill b" style="width:24%"></div></div>
+          <span class="bar-val" style="color:#4ADE80">¥6.6–11.4</span>
+        </div>
+        <div class="bar-row">
+          <span>账户平均激活成本</span>
+          <div class="bar-track"><div class="bar-fill a" style="width:56%"></div></div>
+          <span class="bar-val" style="color:#FBBF24">¥19.67</span>
+        </div>
+        <div class="bar-row">
+          <span>28 个零激活素材</span>
+          <div class="bar-track"><div class="bar-fill r" style="width:100%"></div></div>
+          <span class="bar-val" style="color:#F87171">烧掉 40% 预算</span>
+        </div>
+      </div>
+
+      <div class="insight">
+        <b>舱长的结论：</b>同样的钱，激活率从 2% 提到 8%，等于激活翻 4 倍——<b>这比先加投放预算划算得多</b>。
+        如果先加钱，花双倍预算、激活还是 2%，等于<b>把钱倒进漏水的桶</b>。
+      </div>
+    </div>
+
+    <div class="case reveal" style="margin-top:20px">
+      <div class="case-head" style="margin-bottom:0">
+        <div>
+          <h3 style="margin-bottom:14px">近 30 天账户大盘（27 个账户）</h3>
+          <div class="metrics" style="margin-bottom:0">
+            <div class="metric"><div class="v blue">105,868</div><div class="l">展示数</div><div class="x">环比 +45.4%</div></div>
+            <div class="metric"><div class="v blue">¥1,820</div><div class="l">消耗</div><div class="x">环比 +78.1%</div></div>
+            <div class="metric"><div class="v blue">5,830</div><div class="l">点击数</div><div class="x">环比 +53.2%</div></div>
+            <div class="metric"><div class="v blue">5.51%</div><div class="l">点击率</div><div class="x">环比 +5.6%</div></div>
+          </div>
+        </div>
+        <span class="tag green">● 全部来自巨量真实后台</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 怎么用 ========== -->
+<section id="how">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">怎么用</div>
+      <h2>三步，然后你就不用管了</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="num">01</span>
+        <h3>授权账户</h3>
+        <p>我们协助你申请并开通巨量引擎 Marketing API，把你的广告账户授权给舱长。全程你保留账户所有权，随时可撤销授权。</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">02</span>
+        <h3>说一个目标</h3>
+        <p>在微信里告诉舱长你的目标：「日耗 500，ROI 不低于 1.5」。它会把目标翻译成出价、预算、定向和素材策略。</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">03</span>
+        <h3>收日报，等结果</h3>
+        <p>舱长接管执行：建计划、调出价、换素材、止损。每天 9:00 你会在微信收到一份带诊断和建议的日报。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 安全 ========== -->
+<section id="safety">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">安全与边界</div>
+      <h2>让 AI 花钱，你得先能随时喊停</h2>
+      <p class="sub">我们所有安全机制都围绕一件事设计：<b>控制权始终在你手上。</b></p>
+    </div>
+    <div class="safety">
+      <div class="sf reveal"><span class="k">🔒</span><div><h4>预算硬上限</h4><p>由你设定数字，舱长绝不越线。超限动作一律拒绝执行。</p></div></div>
+      <div class="sf reveal"><span class="k">✋</span><div><h4>一句「停」立即停</h4><p>在微信里说停，所有自动化动作立即挂起，不需要走任何流程。</p></div></div>
+      <div class="sf reveal"><span class="k">📩</span><div><h4>每天 9:00 日报</h4><p>花了多少、来了多少人、哪条在漏水，每天主动推给你，不用你去查。</p></div></div>
+      <div class="sf reveal"><span class="k">🛡️</span><div><h4>不碰你的账号密码与资金</h4><p>只通过官方 API 授权访问，不接触你的登录凭证，资金始终在你的巨量账户里。</p></div></div>
+      <div class="sf reveal"><span class="k">🙋</span><div><h4>关键动作二次确认</h4><p>新建大批量计划、大幅加预算等动作会先向你确认，人在环上，不是黑箱。</p></div></div>
+      <div class="sf reveal"><span class="k">🔍</span><div><h4>出错会说，且会自我回读验证</h4><p>判断错了会主动交代并重新核对数据，而不是把错误结论继续执行下去。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 定价 ========== -->
+<section id="price">
+  <div class="container">
+    <div class="reveal center">
+      <div class="eyebrow">价格</div>
+      <h2>一次定制交付，一行月度服务</h2>
+      <p class="sub">不按效果画饼，不设三档套餐。先跑一个月，看日报说话。<b>本服务面向已有巨量引擎广告投放账户的客户。</b></p>
+    </div>
+
+    <!-- ===== 种子客户限时优惠（名额制，非虚假倒计时） ===== -->
+    <div class="offer reveal">
+      <div class="offer-head">
+        <div>
+          <h3>🎁 种子客户招募 · 仅限前 3 名</h3>
+          <p class="osub">我们正在打磨产品，愿意用价格换 3 个真实案例。名额按<b>签订服务协议的时间</b>先后计算，额满即恢复标准价。</p>
+        </div>
+        <div class="slots">
+          <!-- 名额更新方法：每成交 1 位，把最左边一个 <span class="slot"> 改成 class="slot used"，
+               并把「剩余 3 席」的数字减 1；顶部公告条的数字也要同步改。3 席用完后删除整块 .offer 与公告条。 -->
+          <span class="slot"></span><span class="slot"></span><span class="slot"></span>
+          <span>剩余 3 席</span>
+        </div>
+      </div>
+
+      <div class="offer-rows">
+        <div class="orow">
+          <div class="lbl">Skill 定制 + MCP 接入</div>
+          <div class="prices"><span class="was">¥1,999</span><span class="now">¥999</span><span class="unit">一次性</span></div>
+          <div class="save">立省 ¥1,000</div>
+        </div>
+        <div class="orow">
+          <div class="lbl">首月陪跑（月度服务费）</div>
+          <div class="prices"><span class="was">¥2,999</span><span class="now">¥1,999</span><span class="unit">首月</span></div>
+          <div class="save">立省 ¥1,000</div>
+        </div>
+      </div>
+
+      <div class="offer-total">
+        <div class="tl">种子客户首月实际支出
+          <br><span style="font-size:12.6px;color:var(--dim)">标准价合计 ¥4,998 ｜ 未开户另加 ¥800 协助开户费（此项不参与优惠）</span>
+        </div>
+        <div class="tv">¥2,998 <small>省 ¥2,000</small></div>
+      </div>
+
+      <div class="offer-asks">
+        <h4>作为交换，需要你配合三件事</h4>
+        <ul>
+          <li>允许我们把你的投放数据<b>脱敏后</b>作为案例公开（可匿名，主体信息一律隐去）</li>
+          <li>首月结束后配合一次 30 分钟反馈，帮我们指出产品哪里不好用</li>
+          <li>若效果满意，愿意帮我们介绍 1 位同行（不强制，也不影响服务）</li>
+        </ul>
+      </div>
+
+      <p class="offer-fine">
+        退款规则与标准价客户完全一致：首月未达到三项交付物标准，<b>首月陪跑费 ¥1,999 全额退还</b>；「Skill 定制 + MCP 接入」与「协助开户」为一次性交付费用，不参与退款。
+        我们不设虚假倒计时——名额只有 3 个，满即截止，并按协议签署时间排序。
+      </p>
+    </div>
+
+    <div class="grid-label reveal">标准价 · 第 4 位客户起适用</div>
+    <div class="price-grid">
+      <div class="plan reveal">
+        <h3>Skill 定制 + MCP 接入</h3>
+        <p class="desc">一次性定制交付。为你这套账户量身定做投放技能包，并把 Agent 接入你需要打通的数据源。</p>
+        <div class="amount"><span class="num"><span class="cur">¥</span>1,999</span><span class="per">/ 一次性</span></div>
+        <p class="note" style="color:#FBBF24">定制开发交付费用 · <b>不参与退款</b></p>
+        <ul>
+          <li><b>Skill 定制</b>：按你的行业与账户结构定制投放技能——诊断规则、优化策略、日报模板</li>
+          <li><b>MCP 接入</b>：打通巨量引擎 Marketing API 与约定的业务数据源</li>
+          <li>协助完成 API 申请、权限校验与账户授权</li>
+          <li>目标基线设定、账户结构体检与首份全账户诊断报告</li>
+        </ul>
+        <p class="note" style="color:var(--dim);line-height:1.6">尚未开通巨量广告账户？需另付 <b style="color:#FBBF24">¥800 协助开户服务费</b>（含开户指导、资质与行业类目填报协助）。</p>
+        <a href="#cta" class="btn btn-ghost">先做免费诊断 →</a>
+      </div>
+
+      <div class="plan hot reveal">
+        <span class="ribbon">首月不达标 · 月费全额退</span>
+        <h3>月度陪跑</h3>
+        <p class="desc">舱长接管日常投放执行，你只管收日报和定目标。</p>
+        <div class="amount"><span class="num"><span class="cur">¥</span>2,999</span><span class="per">/ 月</span></div>
+        <p class="note">按主体计费 · 含 5 个投放账户 · 多主体另议</p>
+        <ul>
+          <li>自动出价与预算调整（分钟级）</li>
+          <li>批量建计划、复制跑量计划</li>
+          <li>素材诊断 + 素材生成与批量上传</li>
+          <li>跨账户报表与 ROI 目标优化</li>
+          <li>每天 9:00 微信日报（含诊断与建议）</li>
+          <li>微信里随时对话，随时喊停</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary">立即开始，首月可全退 →</a>
+      </div>
+    </div>
+    <div class="guarantee">
+      <b>首月不达标，首月月费 ¥2,999 全额退。</b>首月月费我们照常收取——这不是话术，是我们对交付有信心：如果你没拿到一份把事情讲清楚的诊断、没看到优化动作真正落地，这笔钱原路退回。
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(34,197,94,.22);font-size:13.2px;color:var(--dim)">
+        ⚠️ <b style="color:#FBBF24">退款范围仅限月度服务费。</b>「Skill 定制 + MCP 接入」¥1,999 与「协助开户」¥800 均为一次性交付费用——付款后定制开发、接入与开户协助即已实际发生并完成交付，<b style="color:#FBBF24">不参与退款</b>。请在付款前确认这一点。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 合作流程与计费机制 ========== -->
+<section id="billing">
+  <div class="container">
+    <div class="reveal center">
+      <div class="eyebrow">怎么开始 · 收费机制</div>
+      <h2>五步开始，不达标就退全款</h2>
+      <p class="sub"><b>第一步和第二步完全免费</b>——你先看清问题，再决定要不要花钱。首月月费我们照收，但达标标准提前写死：<b>没做到，全额退</b>。</p>
+    </div>
+
+    <div class="flow">
+      <div class="fstep reveal"><div class="fn">1</div>
+        <h4>加微信说目标</h4>
+        <p>发一句你现在的投放现状和目标，以及你的小程序是做什么的。</p>
+        <span class="tagm">¥0 · 10 分钟</span></div>
+      <div class="fstep reveal"><div class="fn">2</div>
+        <h4>免费账户诊断</h4>
+        <p>我们拉你账户的真实数据，出一份「钱漏在哪」的诊断报告。不签约、不收费。</p>
+        <span class="tagm">¥0 · 1~2 天</span></div>
+      <div class="fstep reveal"><div class="fn">3</div>
+        <h4>确认方案并授权</h4>
+        <p>确认接入范围与目标基线，签服务协议 + 完成 API 授权。授权你随时可撤销。</p>
+        <span class="tagm">授权可随时撤销</span></div>
+      <div class="fstep reveal"><div class="fn">4</div>
+        <h4>支付定制交付费</h4>
+        <p>我们定制你的 Skill 技能包、接入 MCP 与巨量 Marketing API，完成账户接入与结构体检。</p>
+        <span class="tagm">¥1,999 · 一次性不退</span></div>
+      <div class="fstep reveal"><div class="fn">5</div>
+        <h4>首月陪跑 → 达标续做</h4>
+        <p>舱长接管执行，每天 9:00 日报。月底按三项交付物标准复盘：达标则继续，未达标月费全额退。</p>
+        <span class="tagm">¥2,999 · 不达标全退</span></div>
+    </div>
+
+    <div class="reveal" style="margin-top:74px">
+      <h3 style="font-size:20px;font-weight:800;margin-bottom:8px">计费三原则</h3>
+      <p class="sub" style="font-size:14.6px">收钱的机制比收多少钱更重要。这三条是我们全部规则的底座。</p>
+    </div>
+    <div class="principles">
+      <div class="pr reveal"><span class="pi">🔐</span>
+        <h4>你的钱，永远不经我们的手</h4>
+        <p>广告费你自己在巨量账户里充值，我们<b>不代收、不代充、不碰资金</b>。我们只收服务费，资金全程在你自己的账户里。</p></div>
+      <div class="pr reveal"><span class="pi">🏢</span>
+        <h4>按主体计费，不按账户数加价</h4>
+        <p>一个营业执照主体下的所有广告账户，算 <b>一份</b> 月度服务费（含 5 个投放账户以内），不因为账户多就加钱。</p></div>
+      <div class="pr reveal"><span class="pi">✅</span>
+        <h4>不达标，月费全退</h4>
+        <p>首月月费照收，但达标标准提前写死、由日报客观判定。<b>没做到就全额退回</b>——我们不为没交付的东西收钱。</p></div>
+    </div>
+
+    <details class="toggles reveal">
+      <summary>
+        <span>完整计费与退款细则</span>
+        <span class="tog-hint">10 项条款 · 无隐藏费用 · 点击展开</span>
+      </summary>
+      <div class="tog-body">
+      <table class="rules">
+        <tr><th>项目</th><th>规则</th></tr>
+        <tr><td>Skill 定制 + MCP 接入<br>服务费</td><td><span class="hi">¥1,999 一次性</span>　签约后支付。含：Skill 技能包定制开发（诊断规则、优化策略、日报模板）、MCP 接入（巨量引擎 Marketing API 及约定的业务数据源）、API 申请协助、权限校验、目标基线设定、账户结构体检、首份全账户诊断报告。<br><span class="hi" style="color:#FBBF24">本项为一次性定制开发交付费用，不参与任何退款</span>——付款后定制开发、接入与部署即已实际发生并完成交付，与后续投放效果无关。</td></tr>
+        <tr><td>月度陪跑服务费</td><td><span class="hi">¥2,999 / 月 / 主体</span>　首月照收，<span class="hi">未达标全额退还</span>。含 5 个投放账户以内；超出部分 <span class="hi">¥300 / 账户 / 月</span>。</td></tr>
+        <tr><td>协助开户服务费</td><td><span class="hi">¥800 一次性</span>　<b style="color:#FBBF24">仅在你尚未开通巨量引擎广告账户时需要</b>。含开户指导、资质与行业类目填报协助、账户基础配置。<br>本服务默认面向<b>已有广告投放账户</b>的客户；已有账户的客户无需支付此项。</td></tr>
+        <tr><td>计费周期与付款时点</td><td>自然月，<span class="hi">预付</span>。首月月费于服务协议签署后支付，<span class="hi">月底按达标标准复盘</span>：达标则次月继续，未达标则首月月费全额退还。季付 <span class="hi">¥7,999</span>（较月付省 ¥998）。</td></tr>
+        <tr><td>达标判定</td><td>见下方「首月达标」三项交付物标准，<span class="hi">由日报记录客观判定</span>，双方无需协商。</td></tr>
+        <tr><td>退款规则</td><td>首月未达标 → <span class="hi">首月月度服务费 ¥2,999 全额退还</span>，原路退回，7 个工作日内到账。<br><span class="hi" style="color:#FBBF24">退款范围仅限月度服务费。「Skill 定制 + MCP 接入」服务费 ¥1,999 与「协助开户」服务费 ¥800 均为一次性交付费用，不在退款范围内。</span></td></tr>
+        <tr><td>多主体 / 代理商</td><td>多个营业执照主体或代运营批量场景，按主体数阶梯报价，单独商议。</td></tr>
+        <tr><td>服务不含</td><td>素材拍摄与真人出镜、落地页/小程序开发、广告费充值、未授权平台的投放。<br>（账号注册与广告账户开设属于「协助开户服务费 ¥800」的单独收费项，不含在基准服务内。）</td></tr>
+        <tr><td>发票</td><td><span class="hi">可开增值税普通发票</span>（<b style="color:#FBBF24">开票主体与税点待最终确认</b>）。</td></tr>
+        <tr><td>协议与终止</td><td>按月签约，任一方可提前 15 天书面终止，不设违约金。终止后你一键撤销 API 授权即可，账户与数据都留在你手上。</td></tr>
+      </table>
+      </div>
+    </details>
+
+    <details class="toggles reveal">
+      <summary>
+        <span>「首月达标」的判定标准</span>
+        <span class="tog-hint">决定月费退不退 · 点击展开</span>
+      </summary>
+      <div class="tog-body">
+      <div class="qualify" style="margin-top:0">
+      <h4>「首月达标」的明确定义（这才是退款承诺的前提）</h4>
+      <ol>
+        <li>交付<b>全账户诊断报告</b>，覆盖所有已完成授权的账户</li>
+        <li>落地 <b>≥ 3 项</b>可执行的优化动作（例如：零激活素材替换、无效人群排除、僵尸计划关停、定向收紧）</li>
+        <li>每日 9:00 日报<b>正常运行 ≥ 20 天</b>（含核心指标、转化漏斗、诊断与建议动作）</li>
+      </ol>
+      <div class="warn">
+        <b>我们刻意不把「达标」定义为效果指标。</b>像 <code>ROI 提升 30% 否则退款</code> 这类承诺，把平台流量波动、素材审核、落地页体验这些我们无法完全控制的环节，全部变成了客户的索赔理由——最后只会演变成扯皮。
+        我们承诺的是<b>可交付、可验证、当天就能确认</b>的东西：诊断有没有交、动作有没有落地、日报有没有正常跑。这三件事做到了，你的投放问题必然是清晰的、可推进的。
+      </div>
+      </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section id="faq">
+  <div class="container">
+    <div class="reveal center">
+      <div class="eyebrow">常见问题</div>
+      <h2>你可能想先问这些</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>我需要自己招一个投手吗？</summary>
+        <p>不需要。舱长承担的是投手的执行工作：盯盘、调价、建计划、换素材、出报表。你只需要定目标、看日报、在关键动作上点确认。</p></details>
+      <details class="reveal"><summary>我的账户安全吗？你会动我的钱吗？</summary>
+        <p>舱长只通过巨量引擎官方 API 授权访问，不接触你的账号密码，资金始终留在你自己的巨量账户里。你可以随时撤销授权，也可以随时在微信里说「停」。同时设有预算硬上限，超限动作会被直接拒绝。</p></details>
+      <details class="reveal"><summary>支持哪些投放平台？</summary>
+        <p>目前深度接通巨量引擎（含搜索与通投），已验证可完成账户挖掘、计划与单元创建、出价预算调整、素材挂载、跨账户取数与日报定时推送。其他平台按需扩展。</p></details>
+      <details class="reveal"><summary>多久能看到效果？</summary>
+        <p>第一周你会先拿到一份账户体检：钱漏在哪、哪些素材在空烧、哪些人群不会付费。这些是当天就能看清的。真正的效果改善通常发生在修正承接与素材之后——我们不承诺「几天翻倍」，我们承诺先让你看清问题。</p></details>
+      <details class="reveal"><summary>种子客户的优惠名额还有吗？「前 3 名」怎么算？</summary>
+        <p>按<b>签订服务协议的时间</b>先后排序，额满即恢复标准价。我们不设虚假倒计时——名额只有 3 个，页面上随时能看到剩余数量。<br>种子价 ¥2,998（标准价 ¥4,998，省 ¥2,000），交换条件是：允许我们把结果脱敏后作为案例、首月结束后给我们一次反馈、以及效果满意时帮我们介绍一位同行（不强制）。退款规则和标准价客户完全一致。</p></details>
+      <details class="reveal"><summary>为什么你们敢收首月月费，还敢承诺「不达标全额退」？</summary>
+        <p>因为「收钱」和「敢退」并不矛盾——我们对自己的交付有信心，也不想用「免费」去掩盖一个空洞的承诺。首月交付物是明确的：一份把事情讲清楚的诊断 + 一套真正落地的优化动作。做没做到，你看日报就知道，不存在扯皮空间。<b>退款仅针对月度服务费</b>：「Skill 定制 + MCP 接入」¥1,999 与「协助开户」¥800 是一次性交付费用，付款后开发、接入与开户协助就已经实际完成，所以不参与退款。</p></details>
+      <details class="reveal"><summary>我还没开通巨量引擎广告账户，能合作吗？</summary>
+        <p>可以，但需要额外支付 <b>¥800 协助开户服务费</b>，含开户指导、资质与行业类目填报协助、账户基础配置。<br>说明一下：我们的基准服务（Skill 定制 + 月度陪跑）是<b>面向已经有广告投放账户的客户</b>设计的——已有账户的客户不需要付这 ¥800。如果你还没开户，建议先加企业微信说明你的行业与资质，我们可以先判断开户能不能顺利办下来，再决定要不要往下走。</p></details>
+      <details class="reveal"><summary>我一个月只投几千块，值得用吗？</summary>
+        <p>量级越小，越要先把漏点堵上——因为小预算经不起浪费。我们的建议是先做一次免费账户诊断，看清结构问题，再决定要不要做 Skill 定制与月度陪跑。</p></details>
+      <details class="reveal"><summary>广告费是打给你们，还是我自己充？</summary>
+        <p>你自己充。广告费始终在你的巨量引擎账户里由你自行充值，我们不代收、不代充、不经手任何投放资金。我们只收服务费，所以也不存在资金池或第三方支付的风险。</p></details>
+      <details class="reveal"><summary>我有多个广告账户，怎么算钱？</summary>
+        <p>按营业执照主体计费，不按账户数加价：同一主体下 5 个投放账户以内都算一份月费，超出部分按 ¥300/账户/月。如果是多个主体或代运营批量场景，可以谈阶梯价。</p></details>
+      <details class="reveal"><summary>「首月不达标全额退」由谁判定？会不会扯皮？退款范围是什么？</summary>
+        <p>由日报记录客观判定，不需要双方协商。达标标准是三项可验证的交付物：诊断报告是否交付、优化动作是否落地 ≥3 项、日报是否正常跑满 20 天。这三项每天都在你的企业微信里有记录，达没达标一眼可见。<br><b>退款范围：仅限首月月度服务费 ¥2,999</b>，原路退回，7 个工作日内到账。「Skill 定制 + MCP 接入」¥1,999 与「协助开户」¥800 属于一次性交付费用，不参与退款。</p></details>
+      <details class="reveal"><summary>加的是企业微信还是个人微信？</summary>
+        <p>企业微信，扫码后你和我们一位真实的人类同事建立联系（你也可以直接理解为加了个微信好友）。用企业微信是因为它能挂自动欢迎语、能给你打服务标签、也能稳定把每天 9:00 的日报推给你，不会因为个人号消息太多而漏掉。</p></details>
+      <details class="reveal"><summary>能开发票吗？</summary>
+        <p>可以开增值税普通发票。开票主体与税点我们会在签约前书面向你确认，确保你们财务能正常入账。</p></details>
+      <details class="reveal"><summary>合作不顺我想退出，麻烦吗？</summary>
+        <p>不麻烦。按月签约，任一方提前 15 天书面告知即可终止，不设违约金。终止后你一键撤销 API 授权，账户、数据、素材全部留在你自己手上。</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-box reveal">
+      <div>
+        <h2>把你的目标告诉舱长</h2>
+        <p>扫码加企业微信，发一句你现在的目标和投放现状。我们先用你的真实数据跑一份账户诊断给你看——<b>不收费，也不用先签约</b>。</p>
+        <div class="hero-cta" style="margin:26px 0 0">
+          <a href="assets/qr.png" target="_blank" rel="noopener" class="btn btn-primary">放大二维码 ↗</a>
+          <a href="#case" class="btn btn-ghost">再看一遍真实数据</a>
+        </div>
+      </div>
+      <div class="qr">
+        <img src="assets/qr.png" alt="扫码添加企业微信，领取免费账户诊断" width="749" height="749">
+        <span>扫码加企业微信<br>领免费账户诊断</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-in">
+      <div class="logo" style="font-size:17px">
+        <svg viewBox="0 0 32 32" fill="none" style="width:26px;height:26px">
+          <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="#4A7DFF" stroke-width="2"/>
+          <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="#4A7DFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+        </svg>
+        投流舱 AdCabin
+      </div>
+      <p>你只管定目标，舱长负责跑量。</p>
+    </div>
+    <p class="foot-note">
+      数据说明：本页所有投放数据均来自我方自营微信小程序广告账户的真实后台与 API 返回，已做脱敏处理（账户名称、账户 ID、主体信息、精确金额均已泛化或区间化）。不同行业、不同量级的投放表现差异巨大，本页数据不构成对任何效果提升的承诺。<br>
+      投流舱通过巨量引擎官方 Marketing API 在账户授权范围内执行操作，不接触用户账号密码与资金。
+    </p>
+  </div>
+</footer>
+</div>
+
+<script>
+// ---------- 滚动渐入 ----------
+// 设计原则：渐入只是「锦上添花」，任何异步机制失效都不能让内容隐形。
+// 不依赖 IntersectionObserver（部分环境不回调）、不依赖 requestAnimationFrame
+// （无头环境/后台标签页会被节流）——改由 setInterval 轮询驱动，
+// 叠加同步首刷与最终兜底全显。
+(function () {
+  const all = [...document.querySelectorAll('.reveal')];
+  if (!all.length) return;
+  let pending = all;
+  let timer = null;
+
+  function tick() {
+    if (!pending.length) return;
+    const vh = window.innerHeight || 800;
+    const rest = [];
+    for (const el of pending) {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh - 40 && r.bottom > 0) el.classList.add('in');
+      else rest.push(el);
+    }
+    pending = rest;
+    if (!pending.length && timer) { clearInterval(timer); timer = null; }
+  }
+
+  tick();                                   // 首屏同步显示，不依赖任何异步机制
+  timer = setInterval(tick, 250);           // 轮询驱动：不依赖 rAF / scroll 事件
+  window.addEventListener('scroll', tick, { passive: true });
+  window.addEventListener('resize', tick);
+  setTimeout(tick, 1200);
+  // 最终兜底：6 秒后无条件全显（此时早已在折叠之下，用户无感）
+  setTimeout(() => { all.forEach(el => el.classList.add('in')); pending = []; }, 6000);
+})();
+
+// ---------- 手机对话自动滚动（模拟真实聊天） ----------
+(function () {
+  const wxBody = document.getElementById('wxBody');
+  if (!wxBody) return;
+  let atBottom = false;
+  setInterval(() => {
+    wxBody.scrollTop = atBottom ? 0 : wxBody.scrollHeight;
+    atBottom = !atBottom;
+  }, 4200);
+})();
+</script>
+</body>
+</html>
