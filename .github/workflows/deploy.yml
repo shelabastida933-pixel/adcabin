@@ -125,9 +125,12 @@ jobs:
 
       # ---------------------------------------------------------------
       # 同步文件
-      #   --delete          让服务器与仓库保持一致（删除已下线文件）
-      #   --exclude=.well-known   保护 Let's Encrypt 证书验证目录，
-      #                           否则会被 --delete 删掉导致证书无法续期
+      #   --delete   让服务器与仓库保持一致（删除已下线文件）
+      #   排除项说明（宝塔服务器必须排除，否则 --delete 会破坏服务）：
+      #     .well-known/   Let's Encrypt 证书验证目录，删掉会导致证书无法续期
+      #     .user.ini      宝塔的 PHP 防跨站保护文件，且带 immutable 属性 ——
+      #                    rsync 删不掉它会导致整个部署报错失败
+      #     404.html       宝塔默认错误页，保留
       # ---------------------------------------------------------------
       - name: 同步站点文件
         if: steps.cfg.outputs.skip != 'true'
@@ -138,6 +141,8 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='.well-known/' \
+            --exclude='.user.ini' \
+            --exclude='404.html' \
             --exclude='.gitignore' \
             --exclude='.nojekyll' \
             --exclude='deploy/' \
@@ -149,7 +154,7 @@ jobs:
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          ssh deploy-target "ls -la '${DEPLOY_PATH}' && echo '---' && test -f '${DEPLOY_PATH}/index.html' && echo 'index.html 存在' && test -f '${DEPLOY_PATH}/assets/qr.png' && echo 'assets/qr.png 存在'"
+          ssh deploy-target "ls -la '${DEPLOY_PATH}' && echo '---' && test -f '${DEPLOY_PATH}/index.html' && echo '✅ index.html 存在' && test -f '${DEPLOY_PATH}/assets/qr.png' && echo '✅ assets/qr.png 存在'"
 
       # ---------------------------------------------------------------
       # 部署后线上验证：内容、编码、资源可达
