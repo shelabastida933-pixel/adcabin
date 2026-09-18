@@ -366,6 +366,27 @@ jobs:
           BAIDU_TOKEN: ${{ secrets.BAIDU_TOKEN }}
           BAIDU_TOKEN_ADCABIN: ${{ secrets.BAIDU_TOKEN_ADCABIN }}
         run: |
+          # ---- 只推「本次真正改动」的页面，节省 10 条/天的配额 ----
+          # 百度 API 配额很小（当前账号 10 条/天/站点），重复推送未变更的 URL
+          # 是纯浪费。因此 push 事件下用 git diff 判断哪些 HTML 变了，只推那些；
+          # 手动触发（workflow_dispatch）没有 diff 可比，则推全部。
+          CHANGED=""
+          MANUAL="no"
+          if [ "${{ github.event_name }}" != "push" ]; then
+            MANUAL="yes"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            CHANGED=$(git diff --name-only HEAD^ HEAD -- '*.html' || true)
+          else
+            MANUAL="yes"   # 首次提交等没有父提交的情况，按全量处理
+          fi
+
+          echo "--- 本次改动的 HTML 文件 ---"
+          if [ "$MANUAL" = "yes" ]; then
+            echo "(手动触发 → 推送全部 URL)"
+          else
+            echo "${CHANGED:-(无 → 不推送，不消耗配额)}"
+          fi
+
           push_site() {
             local name="$1" token="$2" site="$3" urls="$4"
             if [ -z "$token" ]; then
@@ -384,16 +405,36 @@ jobs:
             fi
           }
 
-          push_site "公司官网" "${BAIDU_TOKEN}" "yuhuakeji.com.cn" \
-            "https://yuhuakeji.com.cn/"
+          # 公司站：只有一个首页。仅当 company/ 下的【HTML】有改动（或手动触发）时才推。
+          # 注意用 .*\.html$ 而非裸 ^company/：否则改 CSS/图片也会触发推送、白耗配额。
+          ROOT_URLS=""
+          if [ "$MANUAL" = "yes" ] || echo "$CHANGED" | grep -q '^company/.*\.html$'; then
+            ROOT_URLS="https://yuhuakeji.com.cn/"
+          fi
 
-          push_site "投流舱" "${BAIDU_TOKEN_ADCABIN}" "adcabin.yuhuakeji.com.cn" \
-          "$(printf '%s\n' \
-            'https://adcabin.yuhuakeji.com.cn/' \
-            'https://adcabin.yuhuakeji.com.cn/blog/' \
-            'https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html' \
-            'https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html' \
-            'https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html')"
+          # 投流舱：把改动的文件映射到对应 URL
+          ADC_URLS=""
+          add_adc() { ADC_URLS="${ADC_URLS}${ADC_URLS:+$'\n'}$1"; }
+          if [ "$MANUAL" = "yes" ]; then
+            add_adc "https://adcabin.yuhuakeji.com.cn/"
+            add_adc "https://adcabin.yuhuakeji.com.cn/blog/"
+            add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html"
+            add_adc "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html"
+            add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html"
+          else
+            echo "$CHANGED" | grep -q '^index\.html$' && add_adc "https://adcabin.yuhuakeji.com.cn/"
+            echo "$CHANGED" | grep -q '^blog/index\.html$' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/"
+            echo "$CHANGED" | grep -q 'blog/juliang-xiaochengxu-toulou-liucheng\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html"
+            echo "$CHANGED" | grep -q 'blog/xiaochengxu-toulou-30tian\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html"
+            echo "$CHANGED" | grep -q 'blog/juliang-api-keng\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html"
+          fi
+
+          push_site "公司官网" "${BAIDU_TOKEN}" "yuhuakeji.com.cn" "$ROOT_URLS"
+          push_site "投流舱" "${BAIDU_TOKEN_ADCABIN}" "adcabin.yuhuakeji.com.cn" "$ADC_URLS"
+
+          echo ""
+          echo "说明：sitemap 提交（站长平台网页端一次性操作）不占上述 API 配额，适合批量发现；"
+          echo "      API 推送配额仅 10 条/天/站点，因此本步骤只推本次真正改动的页面。"
 
       - name: 部署摘要
         if: steps.cfg.outputs.skip != 'true' && always()

@@ -1,0 +1,129 @@
+name: 隔离机密页面（手动触发 · 可重复使用）
+
+# 用途：把不该公开的文件从网站根目录移到服务器上的隔离目录，
+#       使其无法通过 HTTP 访问，但文件仍然保留（可随时取回）。
+#
+# 为什么需要这个工作流：
+#   网站根目录里的内部文档（商业计划书、战略分析等）只要文件名被猜到
+#   或被搜索引擎抓到，就等于公开。移到 /home/deploy/quarantine/ 后，
+#   该目录不在任何站点的 docroot 下，外部无法访问。
+#
+# 注意：不要用 robots.txt 来"保护"机密文件 —— robots.txt 本身是公开的，
+#       在里面写 Disallow 等于公开告诉大家"这里有敏感文件"。
+
+on:
+  workflow_dispatch:
+    inputs:
+      files:
+        description: '要隔离的文件名（空格分隔，相对站点根目录）'
+        required: true
+        default: 'agenthub.html business.html'
+      confirm:
+        description: '输入 ISOLATE 以确认执行（区分大小写）'
+        required: true
+      restore:
+        description: '填 RESTORE 则执行反向操作（从隔离目录恢复回网站）'
+        required: false
+        default: ''
+
+concurrency:
+  group: isolate-sensitive
+  cancel-in-progress: false
+
+jobs:
+  isolate:
+    name: 隔离 / 恢复机密页面
+    runs-on: ubuntu-latest
+    steps:
+      - name: 确认输入
+        run: |
+          if [ "${{ inputs.confirm }}" != "ISOLATE" ]; then
+            echo "::error title=未确认::请在 confirm 输入框填入 ISOLATE 再运行，当前为「${{ inputs.confirm }}」"
+            exit 1
+          fi
+          echo "目标文件: ${{ inputs.files }}"
+          if [ "${{ inputs.restore }}" = "RESTORE" ]; then
+            echo "模式: 恢复（从隔离目录移回网站）"
+          else
+            echo "模式: 隔离（从网站移出到隔离目录）"
+          fi
+
+      - name: 配置 SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${SSH_HOST}
+            Port ${SSH_PORT:-22}
+            User ${SSH_USER}
+            IdentityFile ~/.ssh/id_deploy
+            StrictHostKeyChecking accept-new
+            ServerAliveInterval 30
+          EOF
+          chmod 600 ~/.ssh/config
+          ssh deploy-target 'echo "连接成功: $(whoami)@$(hostname)"'
+
+      - name: 执行隔离 / 恢复
+        env:
+          SITE: /www/wwwroot/www.yuhuakeji.com.cn
+          QUARANTINE: /home/deploy/quarantine
+          FILES: ${{ inputs.files }}
+          RESTORE: ${{ inputs.restore }}
+        run: |
+          ssh deploy-target "mkdir -p '$QUARANTINE'"
+          echo "=== 隔离目录: $QUARANTINE ==="
+          for f in $FILES; do
+            if [ "$RESTORE" = "RESTORE" ]; then
+              src="$QUARANTINE/$f"; dst="$SITE/$f"
+            else
+              src="$SITE/$f"; dst="$QUARANTINE/$f"
+            fi
+            if ssh deploy-target "test -f '$src'"; then
+              ssh deploy-target "mv '$src' '$dst' && echo '  已移动: $f'"
+            else
+              echo "  跳过（源文件不存在）: $f"
+            fi
+          done
+          echo ""
+          echo "=== 隔离目录现状 ==="
+          ssh deploy-target "ls -la '$QUARANTINE'"
+          echo ""
+          echo "=== 网站根目录（确认已移除）==="
+          ssh deploy-target "ls -1 '$SITE' | head -40"
+
+      - name: 线上验证
+        run: |
+          sleep 2
+          fail=0
+          for f in ${{ inputs.files }}; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://yuhuakeji.com.cn/$f" || echo 000)
+            if [ "${{ inputs.restore }}" = "RESTORE" ]; then
+              [ "$code" = "200" ] && echo "  ✅ $f 已恢复（HTTP 200）" || { echo "  ❌ $f 未恢复（HTTP $code）"; fail=1; }
+            else
+              [ "$code" = "404" ] && echo "  ✅ $f 已隔离（HTTP 404）" || { echo "  ⚠️ $f 返回 HTTP $code（预期 404）"; fail=1; }
+            fi
+          done
+          [ "$fail" = "0" ] || { echo "::warning title=验证未完全通过::请检查上方输出"; }
+
+      - name: 说明
+        if: always()
+        run: |
+          {
+            echo "## 机密页面隔离结果"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "|---|---|"
+            echo "| 文件 | \`${{ inputs.files }}\` |"
+            echo "| 模式 | ${{ inputs.restore == 'RESTORE' && '恢复' || '隔离' }} |"
+            echo "| 站点 | https://yuhuakeji.com.cn/ |"
+            echo "| 隔离目录 | \`/home/deploy/quarantine/\` |"
+            echo ""
+            echo "**恢复方法**：重跑本工作流，把 \`restore\` 填 \`RESTORE\`。"
+          } >> "$GITHUB_STEP_SUMMARY"
