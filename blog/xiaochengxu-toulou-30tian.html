@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小程序投流 30 天实录：40% 预算被零激活素材烧掉｜投流舱</title>
+<meta name="description" content="我自己小程序账户的真实投放诊断：41 个账户 78% 在空转、42 个素材里 28 个零激活烧掉 40% 预算、素材平均只被看 2.15 秒。附三步定位法，教你判断钱漏在投放端还是承接端。">
+<meta name="keywords" content="小程序投流,小程序广告投放,巨量引擎素材优化,广告预算浪费,激活率低怎么办,广告投放诊断,巨量引擎投放,小程序推广">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="小程序投流 30 天实录：40% 预算被零激活素材烧掉">
+<meta property="og:description" content="41 个账户 78% 在空转、28 个素材零激活烧掉 40% 预算、素材平均只被看 2.15 秒。附三步定位法。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "小程序投流 30 天实录：40% 预算被零激活素材烧掉，附三步定位法",
+      "description": "我自己小程序账户的真实投放诊断：41 个账户 78% 在空转、42 个素材里 28 个零激活烧掉 40% 预算、素材平均只被看 2.15 秒。",
+      "author": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "publisher": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://adcabin.yuhuakeji.com.cn/" },
+        { "@type": "ListItem", "position": 2, "name": "实战笔记", "item": "https://adcabin.yuhuakeji.com.cn/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "小程序投流 30 天实录" }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+:root{
+  --bg:#070B1A;--panel:#0E1430;--panel2:#141C44;
+  --line:rgba(74,125,255,.18);--line2:rgba(255,255,255,.07);
+  --accent:#4A7DFF;--accent2:#7C4DFF;--cyan:#22D3EE;
+  --txt:#E8ECF8;--muted:#8B9DD8;--dim:#5C6A96;
+  --green:#22C55E;--amber:#F59E0B;--red:#EF4444;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{
+  content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:1200px;height:1200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,125,255,.15),rgba(124,77,255,.08) 38%,transparent 68%);
+  filter:blur(20px);
+}
+.wrap{position:relative;z-index:1}
+
+/* 导航 */
+nav{
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(7,11,26,.78);border-bottom:1px solid var(--line2);
+}
+.nav-in{max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;text-decoration:none;color:var(--txt)}
+.logo svg{width:28px;height:28px;flex:none}
+.nav-links{display:flex;gap:24px;font-size:14.5px}
+.nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--txt)}
+.nav-links a.on{color:var(--txt)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 20px;border-radius:11px;font-size:14.5px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap;
+}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 24px -8px rgba(74,125,255,.75)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--line2)}
+
+/* 面包屑 */
+.crumb{max-width:var(--maxw);margin:0 auto;padding:22px 24px 0;font-size:13.4px;color:var(--dim)}
+.crumb a{color:var(--muted);text-decoration:none}
+.crumb a:hover{color:var(--txt)}
+
+/* 文章头 */
+article{max-width:var(--maxw);margin:0 auto;padding:26px 24px 40px}
+h1{font-size:clamp(26px,3.6vw,38px);line-height:1.32;letter-spacing:-1px;font-weight:800;margin:14px 0 20px}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13.4px;color:var(--dim);padding-bottom:22px;border-bottom:1px solid var(--line2);margin-bottom:32px}
+.meta b{color:var(--muted);font-weight:600}
+.lede{font-size:16.6px;color:#C9D6F5;padding:20px 22px;border-left:3px solid var(--accent);
+  background:linear-gradient(100deg,rgba(74,125,255,.10),transparent);border-radius:0 12px 12px 0;margin-bottom:34px}
+h2{font-size:22px;font-weight:800;margin:44px 0 16px;letter-spacing:-.4px;padding-left:14px;position:relative}
+h2::before{content:"";position:absolute;left:0;top:5px;width:4px;height:22px;border-radius:2px;
+  background:linear-gradient(180deg,var(--accent),var(--accent2))}
+h3{font-size:17px;font-weight:700;margin:28px 0 10px;color:#D5DEF5}
+p{margin-bottom:18px;color:#C2CEE8;font-size:15.6px}
+strong{color:#fff;font-weight:600}
+a.inline{color:#7EA6FF;text-decoration:none;border-bottom:1px solid rgba(126,166,255,.35)}
+a.inline:hover{border-bottom-color:#7EA6FF}
+ul,ol{margin:0 0 20px 22px;color:#C2CEE8;font-size:15.6px}
+li{margin-bottom:9px}
+code{background:rgba(255,255,255,.07);padding:2px 7px;border-radius:5px;font-size:13.6px;
+  font-family:ui-monospace,Consolas,Monaco,monospace;color:#9DB8FF}
+
+/* 数据卡 */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px;margin:26px 0 30px}
+.stat{background:var(--panel);border:1px solid var(--line2);border-radius:13px;padding:18px}
+.stat .v{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:6px}
+.stat .l{font-size:12.8px;color:var(--muted)}
+.stat .x{font-size:11.6px;color:var(--dim);margin-top:4px}
+.v.red{color:#F87171}.v.amber{color:#FBBF24}.v.blue{color:#60A5FA}.v.green{color:#4ADE80}
+
+/* 提示框 */
+.box{border-radius:13px;padding:20px 22px;margin:26px 0;font-size:15px;
+  background:linear-gradient(100deg,rgba(74,125,255,.10),rgba(124,77,255,.04));
+  border:1px solid var(--line);color:#C9D6F5}
+.box.warn{background:linear-gradient(100deg,rgba(251,191,36,.09),transparent);border-color:rgba(251,191,36,.3)}
+.box.key{background:linear-gradient(100deg,rgba(34,197,94,.09),transparent);border-color:rgba(34,197,94,.28)}
+.box b{color:#fff}
+.box .t{display:block;font-weight:700;margin-bottom:8px;color:#fff;font-size:15.4px}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14.4px}
+th{text-align:left;padding:11px 13px;background:rgba(74,125,255,.10);color:#9DB8FF;
+  font-size:12.6px;letter-spacing:.6px;font-weight:700;border-bottom:1px solid var(--line)}
+td{padding:12px 13px;border-bottom:1px solid var(--line2);color:#C2CEE8;vertical-align:top}
+td:first-child{color:#fff;font-weight:600;white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,.018)}
+
+/* 步骤 */
+.step{display:flex;gap:16px;margin:22px 0;padding:20px;border-radius:13px;
+  background:var(--panel);border:1px solid var(--line2)}
+.step .n{width:34px;height:34px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(74,125,255,.25),rgba(124,77,255,.15));
+  border:1px solid var(--line);font-weight:800;color:#9DB8FF;font-size:15px}
+.step .c{flex:1}
+.step h4{font-size:16px;font-weight:700;margin-bottom:7px;color:#fff}
+.step p{margin-bottom:0;font-size:14.8px}
+
+/* CTA */
+.cta{margin:52px 0 20px;padding:34px 30px;border-radius:20px;
+  background:linear-gradient(140deg,rgba(26,31,78,.95),rgba(45,27,105,.75));
+  border:1px solid var(--line);box-shadow:0 30px 70px -32px rgba(74,125,255,.5)}
+.cta h3{font-size:20px;margin:0 0 12px;color:#fff}
+.cta p{color:#B6C3E4;font-size:15px;margin-bottom:20px}
+.cta .row{display:flex;gap:12px;flex-wrap:wrap}
+
+/* 相关文章 */
+.related{margin:44px 0 0;padding-top:28px;border-top:1px solid var(--line2)}
+.related h3{font-size:15.4px;color:var(--muted);margin-bottom:16px;font-weight:700}
+.related a{display:block;padding:15px 18px;border-radius:11px;background:var(--panel);
+  border:1px solid var(--line2);text-decoration:none;color:#C9D6F5;font-size:14.8px;margin-bottom:10px;transition:all .2s}
+.related a:hover{border-color:var(--line);background:var(--panel2);transform:translateX(3px)}
+
+footer{border-top:1px solid var(--line2);padding:38px 0 50px;margin-top:56px}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;
+  gap:22px;flex-wrap:wrap;align-items:center;font-size:13.2px;color:var(--dim)}
+.foot-in a{color:var(--muted);text-decoration:none}
+.foot-note{max-width:var(--maxw);margin:18px auto 0;padding:0 24px;font-size:12.2px;color:var(--dim);line-height:1.75}
+
+@media(max-width:700px){
+  .nav-links{display:none}
+  .meta{gap:12px}
+  table{font-size:13.4px}
+  td:first-child{white-space:normal}
+  .cta{padding:26px 20px}
+}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">免费账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 小程序投流 30 天实录
+</div>
+
+<article>
+  <h1>小程序投流 30 天实录：40% 的预算被零激活素材烧掉了</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>9 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">
+    这篇文章里的每一个数字，都来自我自己那个小程序在巨量引擎上的真实账户。
+    没有案例包装，没有"某客户"。我要说的是一件不太好听的事：
+    <strong>在开始优化之前，我根本不知道自己的钱漏在哪。</strong>
+  </div>
+
+  <h2>先看结论：四个我不想承认的数字</h2>
+
+  <div class="stats">
+    <div class="stat"><div class="v red">2.03%</div><div class="l">整体激活率</div><div class="x">行业正常 5%~10%</div></div>
+    <div class="stat"><div class="v amber">57%</div><div class="l">零转化的天数</div><div class="x">14 天里 8 天白花钱</div></div>
+    <div class="stat"><div class="v red">40%</div><div class="l">预算被零激活素材烧掉</div><div class="x">42 个素材里 28 个零激活</div></div>
+    <div class="stat"><div class="v amber">2.15<span style="font-size:15px"> 秒</span></div><div class="l">素材平均播放时长</div><div class="x">754 人没看完 25%</div></div>
+  </div>
+
+  <p>近 14 天，我的账户是这样的：消耗 <strong>¥177.05</strong> → 点击 <strong>444</strong> → 激活 <strong>9 个</strong>。
+  点击率 8.98%~11.10%，说实话不算差。但转化到激活只剩 2.03%。</p>
+
+  <p>更扎心的是：14 天里有 <strong>8 天是零转化</strong>。也就是说，超过一半的日子里，我花的钱一个有效用户都没带来。</p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 这里有个容易被忽略的陷阱</span>
+    大部分人看账户只看"花了多少、来了多少"，然后得出"效果不好"这个模糊结论。
+    但<strong>"效果不好"不是诊断，只是情绪</strong>。要修，你必须先知道是哪一环断了。
+  </div>
+
+  <h2>第一步：先看账户层，别急着优化素材</h2>
+
+  <p>我最开始也以为问题在素材。直到我把所有授权账户拉成一张表，才发现真正的问题在更上面一层。</p>
+
+  <p>我的账户结构是这样的：<strong>41 个授权账户，其中 32 个零消耗——占 78%。</strong></p>
+
+  <table>
+    <tr><th>账户状态</th><th>数量</th><th>说明</th></tr>
+    <tr><td>真正在投放</td><td>9 个</td><td>有消耗、有数据</td></tr>
+    <tr><td>卡在授权</td><td>5 个</td><td>授权流程没走完，根本投不出去</td></tr>
+    <tr><td>状态正常但没投</td><td>15 个</td><td>账户是通的，但没人动过</td></tr>
+    <tr><td>状态异常</td><td>12 个</td><td>需要处理才能用</td></tr>
+  </table>
+
+  <p>这意味着什么？<strong>我以为我在 "+41 个账户" 地铺量，实际上只有 9 个在跑。</strong>
+  账户数量带来的"规模感"是假的，它只是让我误判了自己的投放效率。</p>
+
+  <div class="box key">
+    <span class="t">✅ 可复用的动作</span>
+    把所有授权账户拉成一张表，算两个指标：<strong>零消耗账户占比</strong>、<strong>近 14 天零转化天数占比</strong>。
+    如果第一个超过 50%、第二个超过 30%，先别碰素材——你的问题在账户结构层。
+  </div>
+
+  <h2>第二步：拆素材层，找黑洞也找宝贝</h2>
+
+  <p>账户层理清之后，才轮到素材。我的做法很简单粗暴：<strong>把每个素材的消耗除以它的激活数，按激活成本排序。</strong></p>
+
+  <p>42 个有效素材，结果分成非常干净的两极：</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v green">¥6.58–11.35</div><div class="l">5 个素材的激活成本</div><div class="x">远低于均值</div></div>
+    <div class="stat"><div class="v amber">¥19.67</div><div class="l">账户平均激活成本</div><div class="x">被拖累的结果</div></div>
+    <div class="stat"><div class="v red">28 个</div><div class="l">零激活素材</div><div class="x">烧掉 40% 的消耗</div></div>
+  </div>
+
+  <p>5 个素材的激活成本只有 ¥6.58 到 ¥11.35，而账户均值是 ¥19.67。也就是说，
+  <strong>同样的钱，用好素材能多拿将近一倍的激活。</strong></p>
+
+  <p>而另外 28 个素材，一个激活都没带来，却吃掉了 40% 的消耗。</p>
+
+  <div class="box">
+    <span class="t">💡 为什么"零激活素材"最值得盯</span>
+    它们不会报错，不会报警，只会安静地把预算花完。
+    在后台里它们和正常素材长得一模一样——只有把「消耗 ÷ 激活」算出来，它们才会现形。
+  </div>
+
+  <p>更麻烦的一点：我的主力素材从挂上去到被发现，已经跑了 <strong>一个月没换</strong>。
+  而内容流里的素材寿命通常只有 1~2 周。</p>
+
+  <h2>第三步：看漏斗，判断问题在投放端还是承接端</h2>
+
+  <p>这是整篇最关键的一步，也是最多人搞错的一步。</p>
+
+  <p>我把完整漏斗拉出来：</p>
+
+  <table>
+    <tr><th>环节</th><th>数值</th><th>转化率</th></tr>
+    <tr><td>展示</td><td>3,695</td><td>—</td></tr>
+    <tr><td>播放</td><td>2,133</td><td>57.7%</td></tr>
+    <tr><td>3 秒播放</td><td>620</td><td>29.1%</td></tr>
+    <tr><td>点击</td><td>410</td><td>66.1%</td></tr>
+    <tr><td>激活</td><td>9</td><td><strong>2.2%</strong></td></tr>
+  </table>
+
+  <p>看到了吗——<strong>从 3 秒播放到点击的转化率是 66.1%，点击率 11.10%。这两个数字很好。</strong>
+  说明我的素材钩子是有效的，用户愿意点。</p>
+
+  <p>但点进来之后，激活率只有 2.2%。<strong>97.8% 的人在点进来之后走了。</strong></p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 结论：问题不在投放端，在承接端</span>
+    当点击率正常、但激活率远低于行业水平（正常 5%~10%），问题几乎一定出在
+    <strong>落地页或小程序的激活链路</strong>上，而不是出价、定向或素材。
+    这时候去优化投放，等于给一个漏水的桶加更大的水龙头。
+  </div>
+
+  <p>还有一个佐证：素材平均播放时长只有 <strong>2.15 秒</strong>，754 人连视频的 25% 都没看完就划走了。
+  这说明用户是<strong>被钩子吸引点进来的，而不是真的被说服"这事对我有用"</strong>。
+  这种心态进来的流量，承接环节稍微有一点摩擦就会流失。</p>
+
+  <h2>顺手发现的两个无效支出</h2>
+
+  <h3>1. 一个年龄段占了 24% 消耗，贡献 0 转化</h3>
+
+  <p>拆开人群数据后发现：<strong>41–50 岁人群占了我 24% 的消耗，激活数为 0。</strong>
+  而 50 岁以上人群的激活率是 2.81%，激活成本 ¥12.12，明显优于账户均值。</p>
+
+  <p>我的原始定向是"全年龄放开"。这不是"覆盖更广"，这是<strong>把钱同时花在了对的人和错的人身上</strong>。</p>
+
+  <h3>2. 关键词池本身太小</h3>
+
+  <p>搜索侧我铺了 334 个关键词，但平均每个词每天带来的曝光<strong>不到 1 次</strong>。
+  再叠加 CPM ¥44 的成本，量级必然上不去。</p>
+
+  <p>这解释了一个我长期困惑的现象：<strong>余额充足，但就是跑不出去。</strong>
+  账户余额 ¥1,000+，日耗却只有十几块——这不是没钱，是"花不出去"。</p>
+
+  <h2>算一笔账：为什么应该先修承接</h2>
+
+  <p>很多人看到"量起不来"的第一反应是加预算。我们来算一下：</p>
+
+  <table>
+    <tr><th>做法</th><th>结果</th></tr>
+    <tr><td>先加投放预算</td><td>花双倍的钱，激活率还是 2% —— 等于把钱倒进漏水的桶</td></tr>
+    <tr><td>先修承接，再放量</td><td>激活率从 2% 提到 8%，同样预算下激活翻 4 倍</td></tr>
+  </table>
+
+  <div class="box key">
+    <span class="t">✅ 顺序很重要</span>
+    <strong>先修承接（激活率 2% → 8%），再加投放。</strong>
+    顺序反过来，你花的是双倍预算买同一个 2%。
+  </div>
+
+  <h2>你可以直接照做的检查清单</h2>
+
+  <div class="step">
+    <div class="n">1</div>
+    <div class="c">
+      <h4>算零消耗账户占比</h4>
+      <p>把全部授权账户拉平，看有多少账户根本没有消耗。超过 50% 就先修账户结构。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">2</div>
+    <div class="c">
+      <h4>算零转化天数占比</h4>
+      <p>近 14 天里有多少天花了钱但零转化？超过 30% 说明投放稳定性有问题。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">3</div>
+    <div class="c">
+      <h4>按「消耗 ÷ 激活」给素材排序</h4>
+      <p>零激活的立刻停或替换；激活成本最低的那批，加量。这一步通常就能省出 30% 以上的预算。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">4</div>
+    <div class="c">
+      <h4>看点击率，决定修哪一端</h4>
+      <p>点击率正常但激活率低 → 修承接（落地页/小程序）；点击率本身就低 → 才轮到修素材。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">5</div>
+    <div class="c">
+      <h4>拆人群，把 0 转化的人群排掉</h4>
+      <p>不要长期跑"全年龄放开"。总会有某个年龄段在稳定烧钱但从不转化。</p>
+    </div>
+  </div>
+
+  <h2>最后说个实话</h2>
+
+  <p>这四个数字（2.03%、57%、40%、2.15 秒）都很难看。它们意味着我前期的投放效率相当低。</p>
+
+  <p>但把这份诊断做出来之后，我第一次清楚地知道<strong>钱漏在哪、下一步该动哪一环</strong>——
+  这比"效果不好"这种模糊的焦虑有用得多。</p>
+
+  <p>这也是我做 <a href="../" class="inline">投流舱</a> 的原因：
+  投手这个角色最难的不是操作，而是<strong>每天真的去把数据拆开看一遍</strong>。
+  人会累、会偷懒、会只报好消息。所以我把它交给了一个不会累的东西。</p>
+
+  <div class="cta">
+    <h3>想知道你的钱漏在哪？</h3>
+    <p>我们用自己的 Agent 跑一份你账户的真实诊断：哪些素材在空烧、哪个年龄段在浪费、问题在投放端还是承接端。
+    不收费，也不用先签约。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码领免费账户诊断</a>
+      <a href="./" class="btn btn-ghost">看更多实战笔记</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-api-keng.html">→ 巨量引擎 Marketing API 实操：我踩过的 7 个坑（含字段名与报错原文）</a>
+    <a href="../">→ 投流舱：微信里说一句话，AI 接管巨量引擎投放</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营小程序广告账户的真实后台与巨量引擎 Marketing API 返回，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业、不同量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

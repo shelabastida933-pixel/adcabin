@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法（含字段名）｜投流舱</title>
+<meta name="description" content="巨量引擎 Marketing API 开发实录：customer_center_account_list_v3 返回 accounts 而非 list、极速智投不能传出价参数、carousel_material_list 更新报错、dpa_word_list 不能为 null 等 9 个真实报错的原因与解法。">
+<meta name="keywords" content="巨量引擎API,巨量Marketing API,巨量引擎API报错,customer_center_account_list_v3,promotion_bid_update_v3,巨量引擎开发,广告API,巨量引擎接口文档">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法">
+<meta property="og:description" content="字段名错一个接口就返回空、极速智投不能传出价参数、素材列表更新报错——9 个真实报错的原因与解法。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法（含字段名）",
+      "description": "巨量引擎 Marketing API 开发实录：字段名返回差异、自动投放单元不能传出价、素材列表更新报错、空值字段必须清理等 9 个真实报错的原因与解法。",
+      "author": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "publisher": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://adcabin.yuhuakeji.com.cn/" },
+        { "@type": "ListItem", "position": 2, "name": "实战笔记", "item": "https://adcabin.yuhuakeji.com.cn/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "巨量引擎 Marketing API 踩坑记录" }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+:root{
+  --bg:#070B1A;--panel:#0E1430;--panel2:#141C44;
+  --line:rgba(74,125,255,.18);--line2:rgba(255,255,255,.07);
+  --accent:#4A7DFF;--accent2:#7C4DFF;--cyan:#22D3EE;
+  --txt:#E8ECF8;--muted:#8B9DD8;--dim:#5C6A96;
+  --green:#22C55E;--amber:#F59E0B;--red:#EF4444;
+  --maxw:760px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:1200px;height:1200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,125,255,.15),rgba(124,77,255,.08) 38%,transparent 68%);filter:blur(20px)}
+.wrap{position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(7,11,26,.78);border-bottom:1px solid var(--line2)}
+.nav-in{max-width:1180px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;text-decoration:none;color:var(--txt)}
+.logo svg{width:28px;height:28px;flex:none}
+.nav-links{display:flex;gap:24px;font-size:14.5px}
+.nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.on{color:var(--txt)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:11px;
+  font-size:14.5px;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 24px -8px rgba(74,125,255,.75)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--line2)}
+.crumb{max-width:var(--maxw);margin:0 auto;padding:22px 24px 0;font-size:13.4px;color:var(--dim)}
+.crumb a{color:var(--muted);text-decoration:none}
+.crumb a:hover{color:var(--txt)}
+article{max-width:var(--maxw);margin:0 auto;padding:26px 24px 40px}
+h1{font-size:clamp(25px,3.4vw,36px);line-height:1.34;letter-spacing:-1px;font-weight:800;margin:14px 0 20px}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13.4px;color:var(--dim);padding-bottom:22px;
+  border-bottom:1px solid var(--line2);margin-bottom:32px}
+.meta b{color:var(--muted);font-weight:600}
+.lede{font-size:16.4px;color:#C9D6F5;padding:20px 22px;border-left:3px solid var(--accent);
+  background:linear-gradient(100deg,rgba(74,125,255,.10),transparent);border-radius:0 12px 12px 0;margin-bottom:34px}
+h2{font-size:21.5px;font-weight:800;margin:46px 0 16px;letter-spacing:-.4px;padding-left:14px;position:relative}
+h2::before{content:"";position:absolute;left:0;top:5px;width:4px;height:21px;border-radius:2px;
+  background:linear-gradient(180deg,var(--accent),var(--accent2))}
+p{margin-bottom:18px;color:#C2CEE8;font-size:15.6px}
+strong{color:#fff;font-weight:600}
+a.inline{color:#7EA6FF;text-decoration:none;border-bottom:1px solid rgba(126,166,255,.35)}
+ul,ol{margin:0 0 20px 22px;color:#C2CEE8;font-size:15.6px}
+li{margin-bottom:9px}
+code{background:rgba(255,255,255,.075);padding:2px 7px;border-radius:5px;font-size:13.5px;
+  font-family:ui-monospace,Consolas,Monaco,monospace;color:#9DB8FF;word-break:break-all}
+pre{background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:11px;padding:16px 18px;
+  overflow-x:auto;margin:20px 0;font-size:13.4px;line-height:1.7;
+  font-family:ui-monospace,Consolas,Monaco,monospace;color:#9DB8FF}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+
+/* 坑卡片 */
+.pit{margin:30px 0;border-radius:15px;overflow:hidden;border:1px solid var(--line2);background:var(--panel)}
+.pit-h{display:flex;align-items:center;gap:13px;padding:16px 20px;
+  background:linear-gradient(100deg,rgba(239,68,68,.13),rgba(239,68,68,.03));border-bottom:1px solid var(--line2)}
+.pit-h .n{width:30px;height:30px;flex:none;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#FCA5A5;font-weight:800;font-size:14px}
+.pit-h h3{font-size:16.4px;font-weight:700;color:#fff;margin:0}
+.pit-b{padding:20px}
+.pit-b p:last-child{margin-bottom:0}
+.tag{display:inline-block;font-size:11.6px;padding:3px 10px;border-radius:100px;font-weight:700;margin-bottom:12px}
+.tag.sym{background:rgba(239,68,68,.14);color:#FCA5A5;border:1px solid rgba(239,68,68,.32)}
+.tag.why{background:rgba(251,191,36,.14);color:#FBBF24;border:1px solid rgba(251,191,36,.32)}
+.tag.fix{background:rgba(34,197,94,.14);color:#4ADE80;border:1px solid rgba(34,197,94,.32)}
+
+.box{border-radius:13px;padding:20px 22px;margin:26px 0;font-size:15px;
+  background:linear-gradient(100deg,rgba(74,125,255,.10),rgba(124,77,255,.04));
+  border:1px solid var(--line);color:#C9D6F5}
+.box.warn{background:linear-gradient(100deg,rgba(251,191,36,.09),transparent);border-color:rgba(251,191,36,.3)}
+.box.key{background:linear-gradient(100deg,rgba(34,197,94,.09),transparent);border-color:rgba(34,197,94,.28)}
+.box b{color:#fff}
+.box .t{display:block;font-weight:700;margin-bottom:8px;color:#fff;font-size:15.4px}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14.3px}
+th{text-align:left;padding:11px 13px;background:rgba(74,125,255,.10);color:#9DB8FF;
+  font-size:12.6px;letter-spacing:.6px;font-weight:700;border-bottom:1px solid var(--line)}
+td{padding:12px 13px;border-bottom:1px solid var(--line2);color:#C2CEE8;vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.018)}
+
+.cta{margin:52px 0 20px;padding:34px 30px;border-radius:20px;
+  background:linear-gradient(140deg,rgba(26,31,78,.95),rgba(45,27,105,.75));
+  border:1px solid var(--line);box-shadow:0 30px 70px -32px rgba(74,125,255,.5)}
+.cta h3{font-size:20px;margin:0 0 12px;color:#fff}
+.cta p{color:#B6C3E4;font-size:15px;margin-bottom:20px}
+.cta .row{display:flex;gap:12px;flex-wrap:wrap}
+.related{margin:44px 0 0;padding-top:28px;border-top:1px solid var(--line2)}
+.related h3{font-size:15.4px;color:var(--muted);margin-bottom:16px;font-weight:700}
+.related a{display:block;padding:15px 18px;border-radius:11px;background:var(--panel);
+  border:1px solid var(--line2);text-decoration:none;color:#C9D6F5;font-size:14.8px;margin-bottom:10px;transition:all .2s}
+.related a:hover{border-color:var(--line);background:var(--panel2);transform:translateX(3px)}
+footer{border-top:1px solid var(--line2);padding:38px 0 50px;margin-top:56px}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;
+  gap:22px;flex-wrap:wrap;align-items:center;font-size:13.2px;color:var(--dim)}
+.foot-in a{color:var(--muted);text-decoration:none}
+.foot-note{max-width:var(--maxw);margin:18px auto 0;padding:0 24px;font-size:12.2px;color:var(--dim);line-height:1.75}
+@media(max-width:700px){.nav-links{display:none}.cta{padding:26px 20px}pre{font-size:12.4px}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">免费账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 巨量引擎 Marketing API 踩坑记录
+</div>
+
+<article>
+  <h1>巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>11 分钟</b></span>
+    <span>环境：<b>巨量引擎 Marketing API</b></span>
+  </div>
+
+  <div class="lede">
+    这篇文章里的每一条报错，都是我在真实项目里撞到的——不是从文档里抄的。
+    如果你正在对接巨量引擎 Marketing API，这些坑能帮你省掉至少两周的试错。
+    <strong>所有字段名、报错原文都保持原样，方便你直接搜索。</strong>
+  </div>
+
+  <h2>为什么必须用 API，而不是在后台点</h2>
+
+  <p>在后台手动操作能做的事，用 API 都能做，而且有三个后台给不了的能力：</p>
+
+  <ul>
+    <li><strong>跨账户聚合</strong>——后台一次只能看一个账户；API 可以把几十个账户拉成一张表</li>
+    <li><strong>自动化执行</strong>——定时任务、批量操作、秒级响应，人做不到</li>
+    <li><strong>可编程的诊断</strong>——把「消耗 ÷ 激活」这类自定义指标算出来，后台不提供</li>
+  </ul>
+
+  <p>但代价是：<strong>文档不会告诉你字段的真实行为。</strong>下面 9 个坑，全部来自"文档看起来没问题但实际跑不通"的情况。</p>
+
+  <h2>九个个真实报错</h2>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">1</div><h3>返回字段是 <code>accounts</code> 而不是 <code>list</code></h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>调用账户列表接口，返回看起来是空数据或结构错误，拿不到子账户。换了好几个接口名都没用。</p>
+      <pre><code>调用 customer_center_account_list_v3
+预期取：data.list
+实际应取：data.accounts</code></pre>
+      <span class="tag why">原因</span>
+      <p>不同版本的账户列表接口返回结构不统一。文档示例用的是 <code>list</code>，
+      但 <code>v3</code> 版本返回的键名是 <code>accounts</code>。你用旧的解析逻辑去取，自然拿到空值。</p>
+      <span class="tag fix">解法</span>
+      <p>解析时做兼容：<code>data.accounts || data.list || []</code>。
+      更重要的是<strong>先用一个账户把返回的完整 JSON 打出来看一眼</strong>，
+      而不是照着文档写解析——这一步能省掉大量的猜测。</p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">2</div><h3>极速智投的计划根本不能改出价</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>调用更新出价的接口，被系统直接拒绝：</p>
+      <pre><code>自动投放单元不能包含出价参数</code></pre>
+      <span class="tag why">原因</span>
+      <p>这类计划属于<strong>极速智投（自动投放）</strong>，出价由系统托管，不开放手动修改。
+      而另一条同时出现的报错是：</p>
+      <pre><code>不支持搜索周期稳投广告修改出价
+（对应 delivery_type=DURATION）</code></pre>
+      <p>也就是说：<strong>同一个"改出价"动作，在不同投放类型下有不同的权限边界。</strong></p>
+      <span class="tag fix">解法</span>
+      <p>动出价之前，先读计划的 <code>delivery_type</code> 和投放模式：
+      自动投放 / 周期稳投都不支持改价。<br>
+      这类计划想提升量级，正确做法是<strong>从素材侧下手</strong>（补新素材、扩标题），
+      而不是硬改出价。</p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">3</div><h3>"加预算"根本无从下手——它本来就是无限预算</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>计划跑不出量，第一反应是加预算，结果发现：</p>
+      <pre><code>budget_mode = BUDGET_MODE_INFINITE</code></pre>
+      <span class="tag why">原因</span>
+      <p>这是<strong>不限预算</strong>模式——预算由账户余额兜底，计划层级根本没有"预算上限"这个可调项。
+      所谓"加预算"这条路走不通。</p>
+      <span class="tag fix">解法</span>
+      <p>先读 <code>budget_mode</code>。如果是不限预算，说明<strong>限制因素不在预算</strong>，
+      要去查：出价是否有竞争力、定向是否过窄、素材是否老化、关键词池是否太小。</p>
+      <p>这一条我印象很深：当时我以为发现了"余额充足却跑不出去"，其实账户余额一千多、
+      日耗只有十几块——<strong>不是没钱，是花不出去</strong>。这是完全不同的问题。</p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">4</div><h3>更新素材列表报错：「请填写 carousel_id 或 item_id」</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>只想往单元里补几个视频素材，调用更新接口后报错：</p>
+      <pre><code>请填写carousel_id或item_id</code></pre>
+      <p>但你看自己的请求体，明明只传了 <code>video_material_list</code>，压根没打算碰轮播素材。</p>
+      <span class="tag why">原因</span>
+      <p>关键发现：这个单元<strong>本来就有 8 条 <code>carousel_material_list</code></strong>（图文+音频的轮播素材），
+      加上 4 条 <code>video_material_list</code>。</p>
+      <p>更新接口是<strong>整体覆盖语义</strong>——你只传 <code>video_material_list</code>，
+      等于告诉系统"这个单元的素材只有这些"，系统就要求你同时给出轮播素材的标识。</p>
+      <span class="tag fix">解法</span>
+      <p><strong>修改前必须先读完整素材列表，合并后再整体提交。</strong></p>
+      <pre><code># 错误做法
+payload = {"video_material_list": [...]}
+
+# 正确做法：先读，再合并
+cur = get_unit(unit_id)
+payload = {
+    "video_material_list":   cur["video_material_list"] + new_videos,
+    "carousel_material_list": cur["carousel_material_list"],  # 原样带回
+}</code></pre>
+      <p>顺带一个相关坑：轮播素材里的 <code>item_id</code> 可能是 <code>null</code>，
+      而 <code>material_id</code> 有值；还有一个元素带着 <code>item_id: 0</code>。
+      <strong>不能简单地把 null 当作"没这个字段"来清理。</strong></p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">5</div><h3>读取接口拿到的 null，直接提交会被拒</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>从读取接口拿到对象后原样改一改再提交，报：</p>
+      <pre><code>dpa_word_list 不能为 null</code></pre>
+      <span class="tag why">原因</span>
+      <p>读取接口会把未设置的字段返回为 <code>null</code>。
+      写入接口对这些字段<strong>不接受 null</strong>——它要的是"字段不存在"或"空数组"。</p>
+      <span class="tag fix">解法</span>
+      <p>写入前做一次深度清理：<strong>递归剔除所有值为 <code>null</code> 的键</strong>。
+      但要注意例外（见坑 4）：像 <code>item_id: null</code> 这种在特定数组元素里可能有语义，
+      不能一律删。</p>
+      <pre><code>def strip_nulls(o):
+    if isinstance(o, dict):
+        return {k: strip_nulls(v) for k, v in o.items() if v is not None}
+    if isinstance(o, list):
+        return [strip_nulls(x) for x in o]
+    return o</code></pre>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">6</div><h3>「建了项目没建单元」——计划永远零消耗</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>批量建了一批计划，项目（campaign）状态是 <code>ENABLE</code>，看起来一切正常，
+      但消耗始终是 <code>¥0</code>。</p>
+      <span class="tag why">原因</span>
+      <p>巨量引擎是<strong>三层结构</strong>：项目 → 单元 → 素材。
+      只建了项目、没建单元，等于<strong>没有可投放的实体</strong>，自然不会跑。</p>
+      <span class="tag fix">解法</span>
+      <p>建计划的流程必须完整：创建项目 → <strong>创建单元</strong> → 挂载素材。
+      排查零消耗账户时，"有没有单元"应该是最先检查的一项。</p>
+      <p>这个坑的实际代价很大：我一度有 32 个账户处于零消耗状态，
+      其中相当一部分就是这个原因——<strong>不是账户有问题，是计划结构不完整。</strong></p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">7</div><h3>工具列表只返回 2 个工具</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>调用 <code>tools/list</code> 只拿到 2 个工具，而你以为应该有几十个接口可用。</p>
+      <span class="tag why">原因</span>
+      <p>这是 <strong>Tool-Range 限制</strong>——授权的工具范围是有限的，
+      不是"拿到 token 就能调所有接口"。</p>
+      <span class="tag fix">解法</span>
+      <p>不要指望工具列表能告诉你全部能力。
+      <strong>直接按接口名去试</strong>，并准备好处理"权限不足"这一类错误码。</p>
+      <p class="tag fix">记住</p>
+      <p>权限边界是项目开始前就必须确认的第一件事，
+      而不是写到一半才发现某个关键接口没权限。</p>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">8</div><h3>小程序 ROI 指标要单独找，名字很长</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>想拉 ROI，但配置里查不到 <code>cpc</code> / <code>cpm</code> 这类常见指标名，
+      拉出来的数据没有 ROI 字段。</p>
+      <span class="tag why">原因</span>
+      <p>巨量引擎针对<strong>小程序类落地页</strong>有一套专门的归因指标，
+      命名带 <code>attribution_</code> 前缀，例如：</p>
+      <pre><code>attribution_micro_game_0d_roi
+attribution_micro_game_7d_roi
+attribution_active_pay_intra_on...</code></pre>
+      <span class="tag fix">解法</span>
+      <p>不要靠猜指标名。<strong>先把账户可用的指标清单拉出来看一遍</strong>，
+      再按业务需要挑选。小程序类账户尤其要关注 <code>attribution_</code> 系列——
+      它们直接反映付费回收。</p>
+      <div class="box warn" style="margin-top:16px">
+        <span class="t">⚠️ 一个容易误判的信号</span>
+        如果你发现所有 ROI 指标都是 <code>0</code>，先别急着下"投放没效果"的结论。
+        <strong>更可能是付费回传链路没通</strong>——用户付费了但没回传给广告平台，
+        模型学不到"谁会付费"，量自然起不来。这是数据链路问题，不是投放问题。
+      </div>
+    </div>
+  </div>
+
+  <div class="pit">
+    <div class="pit-h"><div class="n">9</div><h3>定时任务里不能执行代码</h3></div>
+    <div class="pit-b">
+      <span class="tag sym">现象</span>
+      <p>把脚本做成定时任务后，原本能跑的动态执行功能报错，提示当前模式下不可用。</p>
+      <span class="tag why">原因</span>
+      <p>定时任务运行在<strong>受限的纯脚本模式</strong>下，出于安全考虑禁用了动态执行能力。</p>
+      <span class="tag fix">解法</span>
+      <p>定时任务里的逻辑必须<strong>全部预置成静态代码</strong>，
+      不能依赖运行时动态生成。好处是：纯脚本任务不消耗对话 token，可以放心高频跑。</p>
+    </div>
+  </div>
+
+  <h2>一张表总结：动之前先读什么</h2>
+
+  <table>
+    <tr><th>你想做的事</th><th>必须先读的字段</th><th>可能的阻挡</th></tr>
+    <tr><td>改出价</td><td><code>delivery_type</code>、投放模式</td><td>自动投放 / 周期稳投不支持</td></tr>
+    <tr><td>加预算</td><td><code>budget_mode</code></td><td>不限预算模式下没有预算可加</td></tr>
+    <tr><td>换素材</td><td>完整素材列表（video + carousel）</td><td>整体覆盖语义会丢掉未传的素材</td></tr>
+    <tr><td>批量建计划</td><td>项目/单元层级是否完整</td><td>只有项目没有单元 → 零消耗</td></tr>
+    <tr><td>拉 ROI</td><td>可用指标清单</td><td>小程序指标命名不同；ROI 全 0 可能是回传未通</td></tr>
+    <tr><td>提交更新</td><td>请求体里的 null</td><td>写入接口不接受 null 字段</td></tr>
+  </table>
+
+  <h2>最重要的三条经验</h2>
+
+  <div class="box key">
+    <span class="t">1. 先读，再写</span>
+    所有写入操作之前，先把当前完整状态读出来。<strong>巨量引擎的更新接口多数是整体覆盖语义</strong>，
+    只传一部分字段 = 把其他字段清空。
+  </div>
+
+  <div class="box key">
+    <span class="t">2. 每次写入后回读验证</span>
+    接口返回成功不代表生效。写入后立刻回读一次，确认值真的变了。
+    我靠这个习惯抓到过好几次"报错但其实部分成功"的情况。
+  </div>
+
+  <div class="box key">
+    <span class="t">3. 把返回的原始 JSON 打出来</span>
+    文档和实际返回不一致是常态（见坑 1）。
+    <strong>不要照着文档写解析，照着真实返回写。</strong>
+  </div>
+
+  <h2>关于 API 权限</h2>
+
+  <p>最后提醒一件比技术更重要的事：<strong>权限边界要在项目开始前确认清楚。</strong></p>
+
+  <p>你需要先搞清楚自己的权限类型——是自有主体的账户授权，还是服务商资质。
+  这两者能操作的账户范围完全不同。如果是给客户做，还要确认代操作他人账户是否在授权范围内。</p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 别跳过这一步</span>
+    技术上跑通、业务上违规，是最贵的错误。
+    先确认边界，再写代码。
+  </div>
+
+  <p>这些坑我已经在 <a href="../" class="inline">投流舱</a> 里全部处理掉了——
+  它通过巨量引擎官方 Marketing API 在授权范围内自动完成取数、诊断与执行，
+  上面这些字段差异、覆盖语义、权限边界都已经封装好。</p>
+
+  <div class="cta">
+    <h3>不想自己踩这些坑？</h3>
+    <p>我们可以用你的真实账户跑一份诊断，让你先看到 Agent 到底能取到什么数据、能做什么动作。
+    不收费，也不用先签约。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码领免费账户诊断</a>
+      <a href="./" class="btn btn-ghost">看更多实战笔记</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="xiaochengxu-toulou-30tian.html">→ 小程序投流 30 天实录：40% 预算被零激活素材烧掉</a>
+    <a href="../">→ 投流舱：微信里说一句话，AI 接管巨量引擎投放</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    说明：本文涉及的接口字段名与报错文案均为巨量引擎 Marketing API 公开接口的一部分，
+    记录的是我方在真实对接过程中遇到的行为差异。字段行为可能随接口版本更新而变化，
+    请以官方最新文档为准。文中投放数据来自我方自营账户，已脱敏。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

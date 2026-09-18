@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实战笔记｜小程序投流与巨量引擎 API 实操记录｜投流舱 AdCabin</title>
+<meta name="description" content="投流舱实战笔记：小程序广告投放的真实数据诊断、巨量引擎 Marketing API 开发踩坑记录、素材与人群优化方法。全部来自我们自营账户与真实对接过程，不含二手经验。">
+<meta name="keywords" content="小程序投流,巨量引擎投放,广告投放实战,巨量引擎API,素材优化,投放诊断,投流笔记">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="实战笔记｜小程序投流与巨量引擎 API 实操记录">
+<meta property="og:description" content="真实数据诊断、API 踩坑记录、素材与人群优化方法。全部来自我们自营账户。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "投流舱实战笔记",
+  "description": "小程序广告投放的真实数据诊断、巨量引擎 Marketing API 开发踩坑记录。",
+  "url": "https://adcabin.yuhuakeji.com.cn/blog/",
+  "inLanguage": "zh-CN",
+  "publisher": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+  "blogPost": [
+    {
+      "@type": "BlogPosting",
+      "headline": "小程序投流 30 天实录：40% 的预算被零激活素材烧掉了",
+      "url": "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html",
+      "datePublished": "2026-09-18",
+      "author": { "@type": "Organization", "name": "投流舱 AdCabin" }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法",
+      "url": "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html",
+      "datePublished": "2026-09-18",
+      "author": { "@type": "Organization", "name": "投流舱 AdCabin" }
+    }
+  ]
+}
+</script>
+
+<style>
+:root{
+  --bg:#070B1A;--panel:#0E1430;--panel2:#141C44;
+  --line:rgba(74,125,255,.18);--line2:rgba(255,255,255,.07);
+  --accent:#4A7DFF;--accent2:#7C4DFF;
+  --txt:#E8ECF8;--muted:#8B9DD8;--dim:#5C6A96;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:1200px;height:1200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(74,125,255,.15),rgba(124,77,255,.08) 38%,transparent 68%);filter:blur(20px)}
+.wrap{position:relative;z-index:1}
+nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(7,11,26,.78);border-bottom:1px solid var(--line2)}
+.nav-in{max-width:1020px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;text-decoration:none;color:var(--txt)}
+.logo svg{width:28px;height:28px;flex:none}
+.nav-links{display:flex;gap:24px;font-size:14.5px}
+.nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.on{color:var(--txt)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:11px;
+  font-size:14.5px;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:all .22s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 24px -8px rgba(74,125,255,.75)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--line2)}
+
+main{max-width:1020px;margin:0 auto;padding:56px 24px 30px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2.4px;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.24;letter-spacing:-1.2px;font-weight:800;margin-bottom:18px}
+.lede{color:var(--muted);font-size:16.4px;max-width:660px;margin-bottom:12px}
+.note{color:var(--dim);font-size:13.6px;max-width:660px}
+
+.posts{margin-top:52px;display:flex;flex-direction:column;gap:16px}
+.post{display:block;padding:28px;border-radius:18px;text-decoration:none;color:inherit;
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.45));
+  border:1px solid var(--line2);transition:all .25s}
+.post:hover{border-color:var(--line);transform:translateY(-3px);
+  background:linear-gradient(165deg,var(--panel2),rgba(20,28,68,.5))}
+.post .top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-size:11.8px;padding:4px 11px;border-radius:100px;font-weight:700;
+  background:rgba(74,125,255,.13);border:1px solid var(--line);color:#9DB8FF}
+.date{font-size:12.6px;color:var(--dim)}
+.post h2{font-size:20.5px;font-weight:800;margin-bottom:11px;letter-spacing:-.4px;line-height:1.4}
+.post:hover h2{color:#9DB8FF}
+.post p{color:var(--muted);font-size:14.8px;margin-bottom:16px}
+.post .more{font-size:13.8px;color:var(--accent);font-weight:600}
+
+.empty{margin-top:40px;padding:44px;border-radius:18px;text-align:center;
+  border:1px dashed var(--line2);color:var(--dim);font-size:14.6px}
+
+.cta{margin:60px 0 20px;padding:36px 32px;border-radius:20px;
+  background:linear-gradient(140deg,rgba(26,31,78,.95),rgba(45,27,105,.75));
+  border:1px solid var(--line);box-shadow:0 30px 70px -32px rgba(74,125,255,.5)}
+.cta h3{font-size:21px;margin:0 0 12px;color:#fff}
+.cta p{color:#B6C3E4;font-size:15.2px;margin-bottom:20px;max-width:560px}
+.cta .row{display:flex;gap:12px;flex-wrap:wrap}
+footer{border-top:1px solid var(--line2);padding:38px 0 50px;margin-top:56px}
+.foot-in{max-width:1020px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;
+  gap:22px;flex-wrap:wrap;align-items:center;font-size:13.2px;color:var(--dim)}
+.foot-in a{color:var(--muted);text-decoration:none}
+@media(max-width:700px){.nav-links{display:none}.post{padding:22px}.cta{padding:26px 20px}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">免费账户诊断</a>
+  </div>
+</nav>
+
+<main>
+  <div class="eyebrow">实战笔记</div>
+  <h1>我们踩过的坑，都写在这里</h1>
+  <p class="lede">
+    这里的每一篇都来自我们自己的账户和真实对接过程——不是行业综述，也不是二手经验。
+    投放数据和账户信息均已脱敏。
+  </p>
+  <p class="note">目前共 2 篇。我们会持续更新。</p>
+
+  <div class="posts">
+    <a href="xiaochengxu-toulou-30tian.html" class="post">
+      <div class="top">
+        <span class="chip">投放诊断</span>
+        <span class="date">2026-09-18 · 阅读约 9 分钟</span>
+      </div>
+      <h2>小程序投流 30 天实录：40% 的预算被零激活素材烧掉了</h2>
+      <p>41 个账户有 78% 在空转、42 个素材里 28 个零激活吃掉 40% 消耗、素材平均只被看 2.15 秒。
+        这篇文章把真实数据和盘托出，并给出一套可复制的三步定位法，帮你判断钱漏在投放端还是承接端。</p>
+      <div class="more">阅读全文 →</div>
+    </a>
+
+    <a href="juliang-api-keng.html" class="post">
+      <div class="top">
+        <span class="chip">API 开发</span>
+        <span class="date">2026-09-18 · 阅读约 11 分钟</span>
+      </div>
+      <h2>巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法</h2>
+      <p>返回字段是 accounts 不是 list、极速智投不能传出价参数、更新素材报「请填写 carousel_id 或 item_id」、
+        dpa_word_list 不能为 null……每条都附报错原文与解法，字段名保持原样方便直接搜索。</p>
+      <div class="more">阅读全文 →</div>
+    </a>
+  </div>
+
+  <div class="cta">
+    <h3>想先看看你的账户漏在哪？</h3>
+    <p>我们用 Agent 跑一份你账户的真实诊断：哪些素材在空烧、哪个人群在浪费、问题在投放端还是承接端。不收费，也不用先签约。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码领免费账户诊断</a>
+      <a href="../" class="btn btn-ghost">了解投流舱</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
