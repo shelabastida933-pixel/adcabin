@@ -22,8 +22,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # fetch-depth: 2 是必须的 —— 后面「只推改动的页面」需要 HEAD^ 做 diff。
+      # actions/checkout 默认 fetch-depth: 1（浅克隆），那样 git rev-parse HEAD^
+      # 会失败，导致每次都退化为「推送全部 URL」，白耗 10 条/天的配额。
       - name: 拉取代码
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
 
       # ---------------------------------------------------------------
       # 未配置密钥时优雅跳过，避免首次推送就出现红色失败
