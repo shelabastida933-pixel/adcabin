@@ -249,6 +249,34 @@ jobs:
             exit 1
           fi
 
+      # ---------------------------------------------------------------
+      # 主动推送到百度站长平台（加速收录）
+      # 未配置 BAIDU_TOKEN 时优雅跳过，不影响部署
+      # token 获取方式：https://ziyuan.baidu.com → 普通收录 → 资源提交 → API 提交
+      # ---------------------------------------------------------------
+      - name: 推送到百度站长平台
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          BAIDU_TOKEN: ${{ secrets.BAIDU_TOKEN }}
+        run: |
+          if [ -z "$BAIDU_TOKEN" ]; then
+            echo "::notice title=跳过百度推送::未配置 BAIDU_TOKEN。到百度站长平台（ziyuan.baidu.com）「普通收录 → API 提交」拿到 token 后，添加名为 BAIDU_TOKEN 的 Secret 即可每次部署自动推送。"
+            exit 0
+          fi
+          SITE="https://adcabin.yuhuakeji.com.cn/"
+          # 主动推送：把本次上线的 URL 提交给百度
+          resp=$(curl -s --max-time 30 -H 'Content-Type:text/plain' \
+            --data-binary "$SITE" \
+            "http://data.zz.baidu.com/urls?site=${SITE}&token=${BAIDU_TOKEN}" || echo '{"error":"curl failed"}')
+          echo "百度返回: $resp"
+          if echo "$resp" | grep -q '"success"'; then
+            echo "✅ 已成功推送到百度"
+          elif echo "$resp" | grep -q '"error"'; then
+            echo "::warning title=百度推送失败::返回 $resp —— 常见原因：token 无效、站点未在百度站长平台验证、或当日配额用尽。不影响网站正常运行。"
+          else
+            echo "::warning title=百度推送结果未知::返回 $resp"
+          fi
+
       - name: 部署摘要
         if: steps.cfg.outputs.skip != 'true' && always()
         run: |

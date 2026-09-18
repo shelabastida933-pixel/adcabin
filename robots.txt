@@ -1,0 +1,25 @@
+# 投流舱 AdCabin — https://adcabin.yuhuakeji.com.cn/
+# 我们欢迎所有搜索引擎收录。
+
+User-agent: *
+Allow: /
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /deploy/
+
+# 百度蜘蛛（含渲染型）
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Baiduspider-render
+Allow: /
+
+# 微信 / 搜狗（微信生态内搜索）
+User-agent: Sogou web spider
+Allow: /
+
+# 头条 / 抖音搜索
+User-agent: Bytespider
+Allow: /
+
+Sitemap: https://adcabin.yuhuakeji.com.cn/sitemap.xml
