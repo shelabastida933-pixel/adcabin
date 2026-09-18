@@ -1,0 +1,26 @@
+# 宇华科技 Yuhua Tech — https://yuhuakeji.com.cn/
+# 我们欢迎搜索引擎收录本公司的产品与内容页面。
+
+User-agent: *
+Allow: /
+# 资源目录无需抓取
+Disallow: /css/
+Disallow: /js/
+Disallow: /dailynews/
+
+# 百度蜘蛛（含渲染型）
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Baiduspider-render
+Allow: /
+
+# 微信 / 搜狗（微信生态内搜索）
+User-agent: Sogou web spider
+Allow: /
+
+# 头条 / 抖音搜索
+User-agent: Bytespider
+Allow: /
+
+Sitemap: https://yuhuakeji.com.cn/sitemap.xml

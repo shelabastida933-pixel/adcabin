@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 宇华科技 Yuhua Tech 站点地图
+     仅列出对外开放的品牌与产品页面。
+     内部文件（商业计划书 agenthub.html、商业方向分析 business.html、临时页
+     demo1.html、旧版 indexblack.html）刻意不列入，也不在 robots.txt 中具名，
+     以免反向暴露这些路径。 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://yuhuakeji.com.cn/</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>weekly</changefreq><priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/yuhua_landing.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/yuhuatob.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/demo.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/Aipic.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/Aiyunmabao.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/hcg.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/openclaw.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/skills.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://yuhuakeji.com.cn/claw.html</loc>
+    <lastmod>2026-09-18</lastmod><changefreq>monthly</changefreq><priority>0.6</priority>
+  </url>
+</urlset>
