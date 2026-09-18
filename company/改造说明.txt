@@ -1,0 +1,88 @@
+宇华科技官网 · 本地化改造包
+==================================
+
+## 改了什么
+
+### 1. 移除 Google Fonts（国内无法访问）
+原来：`<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC...">`
+现在：改用系统字体栈
+
+    "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei",
+    "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif
+
+为什么这样更好：PingFang SC（苹果设备自带）和微软雅黑（Windows 自带）在你用户
+的设备上本来就有，中文显示效果比网络字体更稳、更快，而且首屏不再被外部请求阻塞。
+
+### 2. Tailwind CDN 改为本地预编译 CSS
+原来：`<script src="https://cdn.tailwindcss.com"></script>`
+      → 浏览器要先下载约 100KB 的 JS，再在本地实时生成样式
+现在：`<link rel="stylesheet" href="assets/tailwind.css">`
+      → 18.2 KB 静态 CSS，浏览器直接解析
+
+实测数据：cdn.tailwindcss.com 连续测 3 次，1 次完全超时（12 秒无响应）。
+一旦它挂掉，你整站样式全部失效。本地 CSS 没有这个问题。
+
+### 3. 顺带修好两个一直没生效的效果
+- `animate-blob`：Tailwind 默认没有这个动画类，所以那两个背景光斑**一直是静止的**。
+  这次在配置里补上了真正的 keyframes，现在会动了。
+- `animation-delay-2000`：Tailwind 的 `delay-*` 只作用于 transition，不作用于 animation，
+  所以第二个光斑的错峰延迟也没生效。已补上。
+
+### 4. 修了一个 HTML 语法错误
+产品 2（Yuhua Capsule）外层的 `<a>` 标签没有闭合。浏览器会自动修正，
+但会导致两个产品卡片的可点击区域不一致（产品 1 只有"了解更多"可点，
+产品 2 整张卡可点）。已补上 `</a>`。
+
+### 5. 补充 SEO 基础项
+- `canonical`：避免重复内容判定
+- `robots`：明确允许收录
+- `og:` 系列：微信/社交平台转发时显示标题和描述（原来转发只有一行灰字）
+- `theme-color`：移动端浏览器地址栏配色
+- 保留了百度验证标签（务必不要删，删了验证会失效）
+
+### 6. 移动端细节
+- 输入框字号在 390px 下固定 16px（iOS 上小于 16px 会自动放大页面）
+- 尊重系统「减少动态效果」设置
+
+
+## 怎么上传
+
+你的站点根目录下需要最终是这样：
+
+    /www/wwwroot/yuhuakeji.com.cn/
+    ├── index.html          ← 替换成新的
+    ├── assets/
+    │   └── tailwind.css    ← 新增文件
+    ├── demo.html           ← 保持不动
+    └── Aipic.html          ← 保持不动
+
+步骤（宝塔）：
+
+1. 备份原有的 index.html（右键 → 重命名成 index.html.bak）
+2. 用文件管理器上传新的 index.html，覆盖
+3. 在站点根目录**新建 assets 文件夹**
+4. 上传 tailwind.css 到 assets 目录里
+5. 浏览器打开 https://yuhuakeji.com.cn/ ，按 Ctrl+F5 强制刷新
+
+⚠️ 注意：`assets` 目录必须和 index.html 同级。如果传成
+   `/www/wwwroot/yuhuakeji.com.cn/tailwind.css`（少了 assets 这一层），
+   样式会加载失败，页面会变成无样式的裸 HTML。
+
+
+## 怎么验证传对了
+
+浏览器打开这两个地址，都应该能直接下载/显示文件内容：
+
+    https://yuhuakeji.com.cn/assets/tailwind.css   ← 应显示一大段 CSS
+    https://yuhuakeji.com.cn/                      ← 应显示完整样式
+
+如果 tailwind.css 报 404，说明目录层级传错了。
+
+
+## 本地文件清单
+
+    index.html              改好的首页
+    assets/tailwind.css     编译好的样式（18.2 KB）
+    tailwind.config.js      编译配置（仅开发用，不需要上传）
+    src/input.css           样式源文件（仅开发用，不需要上传）

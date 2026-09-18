@@ -40,29 +40,39 @@ jobs:
           fi
 
       # ---------------------------------------------------------------
-      # 安全闸门：目标路径必须位于宝塔站点目录下，防止误删服务器文件
+      # 安全闸门：所有目标路径必须位于宝塔站点目录下 (/www/wwwroot/)
       # ---------------------------------------------------------------
-      - name: 安全校验（防止误删服务器文件）
+      - name: 安全校验（路径白名单）
         if: steps.cfg.outputs.skip != 'true'
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_PATH_COMPANY: ${{ secrets.DEPLOY_PATH_COMPANY }}
         run: |
-          echo "目标路径: ${DEPLOY_PATH}"
-          case "${DEPLOY_PATH}" in
-            /www/wwwroot/*)
-              # 必须至少有两级，且不能带 .. 或通配
-              case "${DEPLOY_PATH}" in
-                *..*|*\**)
-                  echo "::error::路径包含非法字符，已中止"
-                  exit 1 ;;
-              esac
-              echo "✅ 路径校验通过"
-              ;;
-            *)
-              echo "::error::DEPLOY_PATH 必须位于 /www/wwwroot/ 之下，当前为 ${DEPLOY_PATH}，已中止以防误删"
-              exit 1
-              ;;
-          esac
+          check_path() {
+            local name="$1" p="$2"
+            if [ -z "$p" ]; then
+              echo "  · $name 未配置，跳过该校验"
+              return 0
+            fi
+            echo "  · $name = $p"
+            case "$p" in
+              /www/wwwroot/*)
+                case "$p" in
+                  *..*|*\**)
+                    echo "::error title=路径非法::$name 含 .. 或通配符，已中止"
+                    return 1 ;;
+                esac
+                return 0 ;;
+              *)
+                echo "::error title=路径越界::$name 必须位于 /www/wwwroot/ 之下，当前为 $p，已中止以防误改服务器文件"
+                return 1 ;;
+            esac
+          }
+          ok=1
+          check_path "DEPLOY_PATH（投流舱）" "${DEPLOY_PATH}" || ok=0
+          check_path "DEPLOY_PATH_COMPANY（公司官网）" "${DEPLOY_PATH_COMPANY}" || ok=0
+          [ "$ok" = "1" ] || exit 1
+          echo "✅ 路径校验通过"
 
       - name: 配置 SSH
         if: steps.cfg.outputs.skip != 'true'
@@ -170,14 +180,26 @@ jobs:
       # 注意：-e 的字符串由 rsync 直接 exec，不经过 shell，
       # 所以这里必须用 $HOME（由 bash 展开）而不是 ~ 或 ~/.ssh/config。
       # 用 ~ 会原样传给 ssh 导致 "Can't open user config file"。
-      - name: 同步站点文件
+      # ---------------------------------------------------------------
+      # 同步站点文件
+      #   【刻意不使用 --delete】——服务器上已存在的、仓库里没有的文件一律不动。
+      #   这样即便站点根目录里有历史遗留文件（旧页面、上传的图片、各类验证文件），
+      #   也绝不会被误删。代价只是重命名/删除文件后旧文件会残留，可手工清理。
+      #   排除项：
+      #     company/            公司官网源码在本仓库的 company/ 子目录，不能同步到这里
+      #     .well-known/        Let's Encrypt 证书验证目录
+      #     .user.ini           宝塔的 PHP 防跨站保护文件（带 immutable 属性）
+      #     baidu_verify_* 等   搜索引擎验证文件，删除会导致验证失效
+      # ---------------------------------------------------------------
+      - name: 同步投流舱站点文件
         if: steps.cfg.outputs.skip != 'true'
         env:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          rsync -rlptzv --delete --chmod=D755,F644 \
+          rsync -rlptzv --chmod=D755,F644 \
             --exclude='.git/' \
             --exclude='.github/' \
+            --exclude='company/' \
             --exclude='.well-known/' \
             --exclude='.user.ini' \
             --exclude='baidu_verify_*' \
@@ -190,6 +212,59 @@ jobs:
             --exclude='deploy/' \
             -e "ssh -F $HOME/.ssh/config" \
             ./ deploy-target:"${DEPLOY_PATH}/"
+
+      # ---------------------------------------------------------------
+      # 同步公司官网（宇华科技 yuhuakeji.com.cn）
+      #   源码位于仓库的 company/ 子目录。
+      #   同样【不使用 --delete】，服务器上已有的 demo.html / Aipic.html /
+      #   上传的图片等历史文件完全不受影响。
+      #   未配置 DEPLOY_PATH_COMPANY 时自动跳过，不影响投流舱的部署。
+      # ---------------------------------------------------------------
+      - name: 同步公司官网文件
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH_COMPANY: ${{ secrets.DEPLOY_PATH_COMPANY }}
+        run: |
+          if [ -z "$DEPLOY_PATH_COMPANY" ]; then
+            echo "::notice title=跳过公司官网部署::未配置 DEPLOY_PATH_COMPANY。若需一并部署，添加该 Secret（值为 /www/wwwroot/yuhuakeji.com.cn）并在服务器上把该目录属主改为部署账号。"
+            exit 0
+          fi
+          if [ ! -d company ]; then
+            echo "::warning title=缺少源码::仓库中没有 company/ 目录，跳过"
+            exit 0
+          fi
+          if ! ssh deploy-target "test -d '${DEPLOY_PATH_COMPANY}'"; then
+            echo "::error title=目标目录不存在::服务器上没有 ${DEPLOY_PATH_COMPANY}"
+            ssh deploy-target "ls -1d /www/wwwroot/*/ 2>/dev/null || echo '  (无)'"
+            exit 1
+          fi
+          if ! ssh deploy-target "test -w '${DEPLOY_PATH_COMPANY}'"; then
+            echo "::error title=无写权限::${DEPLOY_PATH_COMPANY} 对部署账号不可写。请在服务器执行：chown -R <部署账号>:<部署账号> '${DEPLOY_PATH_COMPANY}'"
+            ssh deploy-target "ls -ld '${DEPLOY_PATH_COMPANY}'"
+            exit 1
+          fi
+          echo "--- 部署前：目标目录现有文件（不会被删除）---"
+          ssh deploy-target "ls -la '${DEPLOY_PATH_COMPANY}'"
+          rsync -rlptzv --chmod=D755,F644 \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.well-known/' \
+            --exclude='.user.ini' \
+            --exclude='baidu_verify_*' \
+            --exclude='google*.html' \
+            --exclude='BingSiteAuth.xml' \
+            --exclude='sogousiteverification.txt' \
+            --exclude='src/' \
+            --exclude='tailwind.config.js' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='*.md' \
+            --exclude='改造说明.txt' \
+            --exclude='node_modules/' \
+            -e "ssh -F $HOME/.ssh/config" \
+            company/ deploy-target:"${DEPLOY_PATH_COMPANY}/"
+          echo "--- 部署后：确认关键文件已就位 ---"
+          ssh deploy-target "test -f '${DEPLOY_PATH_COMPANY}/index.html' && echo '✅ index.html' ; test -f '${DEPLOY_PATH_COMPANY}/assets/tailwind.css' && echo '✅ assets/tailwind.css'"
 
       - name: 校验服务器上的文件
         if: steps.cfg.outputs.skip != 'true'

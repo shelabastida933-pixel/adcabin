@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ 自定义补充 ============ */
+
+/* 1) 中文字体：改用系统字体栈，去掉对 Google Fonts 的依赖
+      （Google Fonts 在国内不可靠，会阻塞首屏渲染）
+      PingFang SC  —— macOS / iOS
+      Microsoft YaHei —— Windows
+      Noto Sans CJK SC / Source Han Sans —— Linux / Android
+      自带的 Noto Sans SC 作为最后兜底（若系统装了就生效） */
+html {
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB",
+               "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei",
+               "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* 2) animation-delay-2000：Tailwind 没有这个工具类（delay-* 只作用于 transition），
+      所以第二个光斑的错峰延迟一直没生效。这里补上。 */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+/* 3) 尊重用户的「减少动态效果」系统设置 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* 4) 表单输入框在 iOS 上避免自动放大（字号小于 16px 会触发缩放） */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
