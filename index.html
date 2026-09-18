@@ -195,6 +195,37 @@ h2{font-size:clamp(26px,3.4vw,40px);line-height:1.24;letter-spacing:-.9px;font-w
 .pain h3{font-size:16.5px;margin-bottom:8px;font-weight:700}
 .pain p{color:var(--muted);font-size:14.3px}
 
+/* ---------- 病征自查 ---------- */
+.sym-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:44px}
+.sym{
+  background:linear-gradient(165deg,var(--panel),rgba(14,20,48,.45));
+  border:1px solid var(--line2);border-radius:var(--r);padding:24px;
+  position:relative;overflow:hidden;transition:border-color .25s,transform .25s;
+}
+.sym:hover{border-color:rgba(251,191,36,.4);transform:translateY(-3px)}
+.sym::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,var(--amber),transparent)}
+.sym-h{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.sym-h .ic{width:36px;height:36px;flex:none;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:17px;background:rgba(251,191,36,.13);border:1px solid rgba(251,191,36,.28)}
+.sym-h h3{font-size:16.5px;font-weight:800;margin:0}
+.sym-h .code{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.5px}
+.sym .desc{font-size:14.4px;color:#C9D6F5;margin-bottom:14px}
+.sym .evi{
+  display:flex;align-items:baseline;gap:9px;padding:11px 13px;border-radius:10px;
+  background:rgba(239,68,68,.075);border:1px solid rgba(239,68,68,.18);
+}
+.sym .evi .n{font-size:19px;font-weight:800;color:#F87171;letter-spacing:-.5px;flex:none}
+.sym .evi .t{font-size:12.6px;color:var(--muted);line-height:1.5}
+.sym-foot{
+  margin-top:22px;padding:20px 24px;border-radius:14px;display:flex;gap:18px;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;
+  background:linear-gradient(100deg,rgba(74,125,255,.12),rgba(124,77,255,.05));
+  border:1px solid var(--line);
+}
+.sym-foot .t{font-size:15.2px;color:#C9D6F5;max-width:640px}
+.sym-foot .t b{color:#fff}
+
 /* ---------- 能力 ---------- */
 .caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px;margin-top:46px}
 .cap{
@@ -551,6 +582,24 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       "offers": [
         {
           "@type": "Offer",
+          "name": "账户诊断报告",
+          "price": "199",
+          "priceCurrency": "CNY",
+          "description": "1 个主体、全部授权账户。逐项排查空转症/黑洞症/漏桶症/僵尸症/错位症/断链症 6 种病征，按「消耗÷激活」排素材，做漏斗与人群拆解，输出按优先级排列的优化动作清单。费用可全额抵扣后续服务费。",
+          "availability": "https://schema.org/InStock",
+          "url": "https://adcabin.yuhuakeji.com.cn/#price"
+        },
+        {
+          "@type": "Offer",
+          "name": "单次深度优化",
+          "price": "999",
+          "priceCurrency": "CNY",
+          "description": "针对诊断出的最优先问题落地一批优化动作，3~7 天后复测并出前后对比。可全额抵扣月度陪跑费。",
+          "availability": "https://schema.org/InStock",
+          "url": "https://adcabin.yuhuakeji.com.cn/#price"
+        },
+        {
+          "@type": "Offer",
           "name": "Skill 定制 + MCP 接入",
           "price": "1999",
           "priceCurrency": "CNY",
@@ -582,6 +631,18 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       "@type": "FAQPage",
       "@id": "https://adcabin.yuhuakeji.com.cn/#faq",
       "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "为什么要收 ¥199 诊断费？你们不是应该免费诊断来拉客户吗？",
+          "acceptedAnswer": { "@type": "Answer", "text": "三个原因。第一，诊断是真实交付：我们会拉出你全部授权账户的真实数据、逐项排查 6 种病征、按「消耗 ÷ 激活」排素材、拆人群、出优化优先级清单，这是能直接照着干活的东西。第二，付费让我们能筛掉不认真的咨询，我们宁愿服务少数认真的人。第三也是最关键的：这 ¥199 可以全额抵扣后续服务费，如果你之后决定合作，这 199 块一分钱都不会多花。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "单次深度优化 ¥999 和月度陪跑有什么区别？",
+          "acceptedAnswer": { "@type": "Answer", "text": "单次优化是就事论事：针对诊断出的最优先问题动手改一批（关停黑洞素材、收紧无效人群、补齐投放单元等），3~7 天后复测并给前后对比，不含日常盯盘。月度陪跑是长期托管：舱长接管日常投放执行，每天 9:00 推日报，随时响应。两笔费用都可全额抵扣月度陪跑费，先做单次优化没有沉没成本。"
+          }
+        },
         {
           "@type": "Question",
           "name": "我需要自己招一个投手吗？",
@@ -668,9 +729,9 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
     </a>
     <div class="nav-links">
       <a href="#pain">痛点</a>
+      <a href="#symptoms">6 种病征</a>
       <a href="#caps">能力</a>
       <a href="#case">真实数据</a>
-      <a href="#how">怎么用</a>
       <a href="#price">价格</a>
       <a href="blog/">实战笔记</a>
     </div>
@@ -759,6 +820,85 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <h3>你不可能 24 小时盯盘</h3>
         <p>计划跑飞、成本翻倍、余额告急往往发生在深夜。等你早上醒来，钱已经花完了。</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 病征自查 ========== -->
+<section id="symptoms">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">投流体检 · 对号入座</div>
+      <h2>账户跑不出效果，通常逃不出这 6 种病</h2>
+      <p class="sub">
+        下面每一条都配了我们自己账户的真实数字。
+        <b>如果你中了 2 条以上，问题就不在"再优化一下"，而在结构。</b>
+      </p>
+    </div>
+
+    <div class="sym-grid">
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">💤</span>
+          <div><h3>空转症</h3><div class="code">ZERO-SPEND</div></div>
+        </div>
+        <p class="desc">账户余额充足，计划看着一切正常，但日耗就是上不去。不是没钱，是<b>花不出去</b>。</p>
+        <div class="evi"><span class="n">78%</span>
+          <span class="t">41 个授权账户里 32 个零消耗<br>其中不少是"建了项目没建单元"</span></div>
+      </div>
+
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">🕳️</span>
+          <div><h3>黑洞症</h3><div class="code">ZERO-CONVERSION CREATIVE</div></div>
+        </div>
+        <p class="desc">一批素材安静地把预算花完，一个转化都没有。它们不会报警，在后台里和正常素材长得一模一样。</p>
+        <div class="evi"><span class="n">40%</span>
+          <span class="t">42 个有效素材里 28 个零激活<br>吃掉了四成消耗</span></div>
+      </div>
+
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">🪣</span>
+          <div><h3>漏桶症</h3><div class="code">LEAKY FUNNEL</div></div>
+        </div>
+        <p class="desc">点击率明明不差，用户也愿意点进来，但就是转化不了。<b>问题不在投放端，在承接端。</b></p>
+        <div class="evi"><span class="n">2.03%</span>
+          <span class="t">点击率 11.10% 属正常水平<br>但激活率只有 2.03%（正常 5~10%）</span></div>
+      </div>
+
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">🧟</span>
+          <div><h3>僵尸症</h3><div class="code">EMPTY CAMPAIGN</div></div>
+        </div>
+        <p class="desc">项目状态是 ENABLE，看起来在跑，消耗永远是 0。巨量是「项目 → 单元 → 素材」三层结构，<b>缺一层就投不出去</b>。</p>
+        <div class="evi"><span class="n">35 个</span>
+          <span class="t">单个账户 40 个项目里<br>35 个是废弃的空壳项目</span></div>
+      </div>
+
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">🎯</span>
+          <div><h3>错位症</h3><div class="code">WRONG AUDIENCE</div></div>
+        </div>
+        <p class="desc">"全年龄放开"不等于覆盖更广，而是<b>把钱同时花在对的人和错的人身上</b>。总有人群在稳定烧钱、从不转化。</p>
+        <div class="evi"><span class="n">24%</span>
+          <span class="t">41–50 岁人群占了 24% 消耗<br>贡献 0 个转化</span></div>
+      </div>
+
+      <div class="sym reveal">
+        <div class="sym-h"><span class="ic">🔌</span>
+          <div><h3>断链症</h3><div class="code">BROKEN CALLBACK</div></div>
+        </div>
+        <p class="desc">所有 ROI 指标都是 0。先别急着下"投放没效果"的结论——<b>更可能是付费回传链路没通</b>，模型学不到谁会付费。</p>
+        <div class="evi"><span class="n">0</span>
+          <span class="t">小程序 ROI 系列指标全为 0<br>这是数据链路问题，不是投放问题</span></div>
+      </div>
+    </div>
+
+    <div class="sym-foot reveal">
+      <div class="t">
+        <b>为什么先体检，而不是先加预算？</b>
+        因为如果激活率是 2%，花双倍预算买到的还是同一个 2%——
+        等于<b>把钱倒进漏水的桶</b>。先把承接修到 8%，同样预算下激活翻 4 倍。
+      </div>
+      <a href="#price" class="btn btn-primary">看诊断怎么收费 →</a>
     </div>
   </div>
 </section>
@@ -908,9 +1048,51 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
   <div class="container">
     <div class="reveal center">
       <div class="eyebrow">价格</div>
-      <h2>一次定制交付，一行月度服务</h2>
-      <p class="sub">不按效果画饼，不设三档套餐。先跑一个月，看日报说话。<b>本服务面向已有巨量引擎广告投放账户的客户。</b></p>
+      <h2>先付费看清问题，再决定要不要长期合作</h2>
+      <p class="sub">
+        诊断不是免费样品，是一份真实交付——我们会拉你的真实账户数据、出可执行的报告。
+        <b>而且这笔钱可以全额抵扣后续服务费</b>：你没有任何额外成本，我们也能筛掉不认真的咨询。
+        <b>本服务面向已有巨量引擎广告投放账户的客户。</b>
+      </p>
     </div>
+
+    <!-- ===== 第一步：先看清问题 ===== -->
+    <div class="grid-label reveal">第一步 · 先看清问题（费用可全额抵扣）</div>
+    <div class="price-grid">
+      <div class="plan hot reveal">
+        <span class="ribbon">可全额抵扣</span>
+        <h3>账户诊断报告</h3>
+        <p class="desc">把全部授权账户拉成一张表，逐项排查钱漏在哪。1~2 个工作日交付。</p>
+        <div class="amount"><span class="num"><span class="cur">¥</span>199</span><span class="per">/ 次</span></div>
+        <p class="note">1 个主体 · 全部授权账户 · <b style="color:#4ADE80">可全额抵扣后续服务费</b></p>
+        <ul>
+          <li><b>6 种病征逐项排查</b>：空转症 / 黑洞症 / 漏桶症 / 僵尸症 / 错位症 / 断链症</li>
+          <li>按「消耗 ÷ 激活」排序的素材清单，直接标出零激活黑洞</li>
+          <li>漏斗诊断：判断问题在投放端还是承接端</li>
+          <li>人群拆解：找出稳定烧钱、从不转化的人群</li>
+          <li>按优先级排列的优化动作清单（先改哪个、为什么）</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary">¥199 做诊断（可抵扣）→</a>
+      </div>
+
+      <div class="plan reveal">
+        <span class="ribbon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24)">可全额抵扣</span>
+        <h3>单次深度优化</h3>
+        <p class="desc">针对诊断出的最优先问题，我们直接动手改一批，几天后复测效果。适合想先看一次效果、再决定要不要长期合作的客户。</p>
+        <div class="amount"><span class="num"><span class="cur">¥</span>999</span><span class="per">/ 次</span></div>
+        <p class="note">含复测 · <b style="color:#4ADE80">可全额抵扣月度陪跑费</b></p>
+        <ul>
+          <li>落地一批具体动作：关停黑洞素材、收紧无效人群、补齐投放单元</li>
+          <li>3~7 天后复测，出前后对比数据</li>
+          <li>含复测后的二次调整建议</li>
+          <li>不做长期承诺，看结果再定</li>
+        </ul>
+        <a href="#cta" class="btn btn-ghost">先做一次优化 →</a>
+      </div>
+    </div>
+
+    <!-- ===== 第二步：长期合作 ===== -->
+    <div class="grid-label reveal">第二步 · 长期合作（先用上面那步验证效果）</div>
 
     <!-- ===== 种子客户限时优惠（名额制，非虚假倒计时） ===== -->
     <div class="offer reveal">
@@ -962,7 +1144,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       </p>
     </div>
 
-    <div class="grid-label reveal">标准价 · 第 4 位客户起适用</div>
+    <div class="grid-label reveal">标准价 · 第 4 位客户起适用（不含上面第一步的诊断与单次优化）</div>
     <div class="price-grid">
       <div class="plan reveal">
         <h3>Skill 定制 + MCP 接入</h3>
@@ -976,7 +1158,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
           <li>目标基线设定、账户结构体检与首份全账户诊断报告</li>
         </ul>
         <p class="note" style="color:var(--dim);line-height:1.6">尚未开通巨量广告账户？需另付 <b style="color:#FBBF24">¥800 协助开户服务费</b>（含开户指导、资质与行业类目填报协助）。</p>
-        <a href="#cta" class="btn btn-ghost">先做免费诊断 →</a>
+        <a href="#cta" class="btn btn-ghost">先做 ¥199 诊断 →</a>
       </div>
 
       <div class="plan hot reveal">
@@ -1011,7 +1193,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
     <div class="reveal center">
       <div class="eyebrow">怎么开始 · 收费机制</div>
       <h2>五步开始，不达标就退全款</h2>
-      <p class="sub"><b>第一步和第二步完全免费</b>——你先看清问题，再决定要不要花钱。首月月费我们照收，但达标标准提前写死：<b>没做到，全额退</b>。</p>
+      <p class="sub"><b>第一步加微信聊目标不收钱，第二步的诊断是 ¥199 且可全额抵扣</b>——你先看清问题，再决定要不要往下走。首月月费我们照收，但达标标准提前写死：<b>没做到，全额退</b>。</p>
     </div>
 
     <div class="flow">
@@ -1020,9 +1202,9 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p>发一句你现在的投放现状和目标，以及你的小程序是做什么的。</p>
         <span class="tagm">¥0 · 10 分钟</span></div>
       <div class="fstep reveal"><div class="fn">2</div>
-        <h4>免费账户诊断</h4>
-        <p>我们拉你账户的真实数据，出一份「钱漏在哪」的诊断报告。不签约、不收费。</p>
-        <span class="tagm">¥0 · 1~2 天</span></div>
+        <h4>付费账户诊断</h4>
+        <p>我们拉你账户的真实数据，逐项排查 6 种病征，出一份「钱漏在哪」的报告。<b>这笔钱可全额抵扣后续服务费。</b></p>
+        <span class="tagm">¥199 · 1~2 天</span></div>
       <div class="fstep reveal"><div class="fn">3</div>
         <h4>确认方案并授权</h4>
         <p>确认接入范围与目标基线，签服务协议 + 完成 API 授权。授权你随时可撤销。</p>
@@ -1106,6 +1288,15 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       <h2>你可能想先问这些</h2>
     </div>
     <div class="faq">
+      <details class="reveal"><summary>为什么要收 ¥199 诊断费？你们不是应该免费诊断来拉客户吗？</summary>
+        <p>三个原因。<br>
+        <b>第一，诊断是真实交付，不是话术。</b>我们会拉出你全部授权账户的真实数据、逐项排查 6 种病征、按「消耗 ÷ 激活」排素材、拆人群、出优化优先级清单——这是一份能直接照着干活的东西，不是聊天记录。<br>
+        <b>第二，付费让我们能筛掉不认真的咨询。</b>免费的诊断申请里，大量的人连账户数据都不愿意给。我们宁愿服务少数认真的人。<br>
+        <b>第三，也是最关键的：这 ¥199 可以全额抵扣后续服务费。</b>也就是说，如果你之后决定合作，这 199 块一分钱都不会多花——你没有任何额外成本。</p></details>
+      <details class="reveal"><summary>单次深度优化 ¥999 和月度陪跑有什么区别？</summary>
+        <p>单次优化是"就事论事"：针对诊断出的最优先问题，我们动手改一批（关停黑洞素材、收紧无效人群、补齐投放单元等），3~7 天后复测，给你前后对比。它不包含日常盯盘。<br>
+        月度陪跑是"长期托管"：舱长接管日常投放执行，每天 9:00 推日报，随时响应。适合确认了效果、希望长期有人管的客户。<br>
+        <b>两笔费用都可全额抵扣月度陪跑费</b>，所以先做单次优化没有沉没成本。</p></details>
       <details class="reveal"><summary>我需要自己招一个投手吗？</summary>
         <p>不需要。舱长承担的是投手的执行工作：盯盘、调价、建计划、换素材、出报表。你只需要定目标、看日报、在关键动作上点确认。</p></details>
       <details class="reveal"><summary>我的账户安全吗？你会动我的钱吗？</summary>
@@ -1121,7 +1312,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       <details class="reveal"><summary>我还没开通巨量引擎广告账户，能合作吗？</summary>
         <p>可以，但需要额外支付 <b>¥800 协助开户服务费</b>，含开户指导、资质与行业类目填报协助、账户基础配置。<br>说明一下：我们的基准服务（Skill 定制 + 月度陪跑）是<b>面向已经有广告投放账户的客户</b>设计的——已有账户的客户不需要付这 ¥800。如果你还没开户，建议先加企业微信说明你的行业与资质，我们可以先判断开户能不能顺利办下来，再决定要不要往下走。</p></details>
       <details class="reveal"><summary>我一个月只投几千块，值得用吗？</summary>
-        <p>量级越小，越要先把漏点堵上——因为小预算经不起浪费。我们的建议是先做一次免费账户诊断，看清结构问题，再决定要不要做 Skill 定制与月度陪跑。</p></details>
+        <p>量级越小，越要先把漏点堵上——因为小预算经不起浪费。我们的建议是先花 ¥199 做一次账户诊断（<b>这笔钱可以全额抵扣后续服务费</b>），看清结构问题，再决定要不要做 Skill 定制与月度陪跑。</p></details>
       <details class="reveal"><summary>广告费是打给你们，还是我自己充？</summary>
         <p>你自己充。广告费始终在你的巨量引擎账户里由你自行充值，我们不代收、不代充、不经手任何投放资金。我们只收服务费，所以也不存在资金池或第三方支付的风险。</p></details>
       <details class="reveal"><summary>我有多个广告账户，怎么算钱？</summary>
@@ -1151,8 +1342,8 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         </div>
       </div>
       <div class="qr">
-        <img src="assets/qr.png" alt="扫码添加企业微信，领取免费账户诊断" width="749" height="749">
-        <span>扫码加企业微信<br>领免费账户诊断</span>
+        <img src="assets/qr.png" alt="扫码添加企业微信，做一次 ¥199 账户诊断" width="749" height="749">
+        <span>扫码加企业微信<br>做 ¥199 账户诊断</span>
       </div>
     </div>
   </div>
