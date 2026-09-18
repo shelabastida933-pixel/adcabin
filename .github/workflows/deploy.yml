@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: 拉取代码
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ---------------------------------------------------------------
       # 未配置密钥时优雅跳过，避免首次推送就出现红色失败
