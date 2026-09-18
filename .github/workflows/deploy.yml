@@ -180,6 +180,10 @@ jobs:
             --exclude='.github/' \
             --exclude='.well-known/' \
             --exclude='.user.ini' \
+            --exclude='baidu_verify_*' \
+            --exclude='google*.html' \
+            --exclude='BingSiteAuth.xml' \
+            --exclude='sogousiteverification.txt' \
             --exclude='404.html' \
             --exclude='.gitignore' \
             --exclude='.nojekyll' \
