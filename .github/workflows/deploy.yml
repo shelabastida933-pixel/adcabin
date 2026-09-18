@@ -167,6 +167,9 @@ jobs:
       #                    rsync 删不掉它会导致整个部署报错失败
       #     404.html       宝塔默认错误页，保留
       # ---------------------------------------------------------------
+      # 注意：-e 的字符串由 rsync 直接 exec，不经过 shell，
+      # 所以这里必须用 $HOME（由 bash 展开）而不是 ~ 或 ~/.ssh/config。
+      # 用 ~ 会原样传给 ssh 导致 "Can't open user config file"。
       - name: 同步站点文件
         if: steps.cfg.outputs.skip != 'true'
         env:
@@ -181,7 +184,7 @@ jobs:
             --exclude='.gitignore' \
             --exclude='.nojekyll' \
             --exclude='deploy/' \
-            -e 'ssh -F ~/.ssh/config' \
+            -e "ssh -F $HOME/.ssh/config" \
             ./ deploy-target:"${DEPLOY_PATH}/"
 
       - name: 校验服务器上的文件
