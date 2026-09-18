@@ -1,0 +1,189 @@
+name: 部署官网到腾讯云服务器
+
+# 触发方式：
+#   1. push 到 main（我改完文案推上去就自动部署）
+#   2. 在 GitHub 网页上手动点「Run workflow」
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'deploy/**'
+  workflow_dispatch:
+
+# 同一时间只跑一个部署，避免并发写同一台服务器
+concurrency:
+  group: deploy-adcabin
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: 同步到 adcabin.yuhuakeji.com.cn
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------
+      # 未配置密钥时优雅跳过，避免首次推送就出现红色失败
+      # ---------------------------------------------------------------
+      - name: 检查部署密钥是否已配置
+        id: cfg
+        run: |
+          if [ -z "${{ secrets.SSH_HOST }}" ] || [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "::notice title=跳过部署::尚未配置部署密钥。请按 deploy/CI-CD部署指南.md 配置 Repository Secrets 后重跑本工作流。"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "密钥已配置，准备部署"
+          fi
+
+      # ---------------------------------------------------------------
+      # 安全闸门：目标路径必须位于宝塔站点目录下，防止误删服务器文件
+      # ---------------------------------------------------------------
+      - name: 安全校验（防止误删服务器文件）
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "目标路径: ${DEPLOY_PATH}"
+          case "${DEPLOY_PATH}" in
+            /www/wwwroot/*)
+              # 必须至少有两级，且不能带 .. 或通配
+              case "${DEPLOY_PATH}" in
+                *..*|*\**)
+                  echo "::error::路径包含非法字符，已中止"
+                  exit 1 ;;
+              esac
+              echo "✅ 路径校验通过"
+              ;;
+            *)
+              echo "::error::DEPLOY_PATH 必须位于 /www/wwwroot/ 之下，当前为 ${DEPLOY_PATH}，已中止以防误删"
+              exit 1
+              ;;
+          esac
+
+      - name: 配置 SSH
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          # 首次连接自动接受主机指纹（免去手工维护 known_hosts）
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${SSH_HOST}
+            Port ${SSH_PORT:-22}
+            User ${{ secrets.SSH_USER }}
+            IdentityFile ~/.ssh/id_deploy
+            StrictHostKeyChecking accept-new
+            ServerAliveInterval 30
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: 测试 SSH 连通性
+        if: steps.cfg.outputs.skip != 'true'
+        run: |
+          ssh deploy-target 'echo "连接成功: $(whoami)@$(hostname)"'
+          ssh deploy-target 'which rsync >/dev/null && echo "rsync 可用" || (echo "::error::服务器未安装 rsync，请先执行 yum install -y rsync 或 apt install -y rsync"; exit 1)'
+
+      # ---------------------------------------------------------------
+      # 同步文件
+      #   --delete          让服务器与仓库保持一致（删除已下线文件）
+      #   --exclude=.well-known   保护 Let's Encrypt 证书验证目录，
+      #                           否则会被 --delete 删掉导致证书无法续期
+      # ---------------------------------------------------------------
+      - name: 同步站点文件
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          rsync -rlptzv --delete --chmod=D755,F644 \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.well-known/' \
+            --exclude='.gitignore' \
+            --exclude='.nojekyll' \
+            --exclude='deploy/' \
+            -e 'ssh -F ~/.ssh/config' \
+            ./ deploy-target:"${DEPLOY_PATH}/"
+
+      - name: 校验服务器上的文件
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh deploy-target "ls -la '${DEPLOY_PATH}' && echo '---' && test -f '${DEPLOY_PATH}/index.html' && echo 'index.html 存在' && test -f '${DEPLOY_PATH}/assets/qr.png' && echo 'assets/qr.png 存在'"
+
+      # ---------------------------------------------------------------
+      # 部署后线上验证：内容、编码、资源可达
+      # ---------------------------------------------------------------
+      - name: 线上验证
+        if: steps.cfg.outputs.skip != 'true'
+        run: |
+          HTTPS_URL="https://adcabin.yuhuakeji.com.cn/"
+          HTTP_URL="http://adcabin.yuhuakeji.com.cn/"
+
+          URL=""
+          for base in "$HTTPS_URL" "$HTTP_URL"; do
+            for i in $(seq 1 6); do
+              code=$(curl -s -o /tmp/index.html -w '%{http_code}' --max-time 20 "$base" || echo 000)
+              [ "$code" = "200" ] && { URL="$base"; break; }
+              echo "  $base -> HTTP $code，10 秒后重试 ($i/6)"
+              sleep 10
+            done
+            [ -n "$URL" ] && break
+          done
+
+          if [ -z "$URL" ]; then
+            echo "::error title=线上访问失败::DNS 解析或宝塔站点未生效。请确认：① DNSPod 已加 adcabin -> 62.234.44.62 的 A 记录 ② 宝塔已创建站点 ③ 站点根目录文件已就位"
+            exit 1
+          fi
+          echo "✅ 可访问: $URL"
+
+          if [ "$URL" = "$HTTP_URL" ]; then
+            echo "::warning title=SSL 未就绪::目前仅能通过 http 访问。请在宝塔【站点设置 → SSL → Let's Encrypt】申请证书并开启「强制 HTTPS」，否则微信内会提示不安全。"
+          else
+            echo "✅ HTTPS 已就绪"
+          fi
+
+          echo "--- 内容校验 ---"
+          fail=0
+          for kw in "投流舱" "舱长负责跑量" "Skill 定制 + MCP 接入" "协助开户服务费" "种子客户招募" "剩余 3 席" "完整计费与退款细则"; do
+            if grep -q "$kw" /tmp/index.html; then
+              echo "  ✅ $kw"
+            else
+              echo "  ❌ 缺少: $kw"
+              fail=1
+            fi
+          done
+
+          echo "--- 资源校验 ---"
+          qr=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${URL}assets/qr.png" || echo 000)
+          echo "  assets/qr.png -> HTTP $qr"
+          [ "$qr" = "200" ] || fail=1
+
+          if [ "$fail" = "0" ]; then
+            echo "🎉 部署完成且验证通过"
+          else
+            echo "::error::线上内容校验未通过"
+            exit 1
+          fi
+
+      - name: 部署摘要
+        if: steps.cfg.outputs.skip != 'true' && always()
+        run: |
+          {
+            echo "## 官网部署结果"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "|---|---|"
+            echo "| 访问地址 | https://adcabin.yuhuakeji.com.cn/ |"
+            echo "| 提交 | \`${GITHUB_SHA:0:7}\` |"
+            echo "| 结果 | ${{ job.status }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
