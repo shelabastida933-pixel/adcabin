@@ -89,8 +89,43 @@ jobs:
       - name: 测试 SSH 连通性
         if: steps.cfg.outputs.skip != 'true'
         run: |
-          ssh deploy-target 'echo "连接成功: $(whoami)@$(hostname)"'
-          ssh deploy-target 'which rsync >/dev/null && echo "rsync 可用" || (echo "::error::服务器未安装 rsync，请先执行 yum install -y rsync 或 apt install -y rsync"; exit 1)'
+          echo "=============================================="
+          echo " 本次使用的私钥指纹（请与服务器对比）"
+          echo "=============================================="
+          if ssh-keygen -y -f ~/.ssh/id_deploy > /tmp/derived.pub 2>/tmp/keyerr; then
+            FP=$(ssh-keygen -lf /tmp/derived.pub)
+            echo "  $FP"
+            echo ""
+            echo "  服务器上请执行下面这条，两者的指纹【必须完全一致】："
+            echo "    ssh-keygen -lf ~/.ssh/authorized_keys"
+            echo ""
+            echo "  派生的公钥内容（仅供比对，这是公开信息）："
+            cat /tmp/derived.pub
+          else
+            echo "::error title=私钥无法解析::GitHub Secret「SSH_PRIVATE_KEY」的内容不是有效的私钥。常见原因：① 误填了 .pub 公钥文件 ② 复制时漏掉了 -----BEGIN/END----- 首尾两行 ③ 换行被破坏成了一行"
+            echo "--- ssh-keygen 报错 ---"
+            cat /tmp/keyerr
+            exit 1
+          fi
+
+          echo ""
+          echo "=============================================="
+          echo " 连接测试（详细模式）"
+          echo "=============================================="
+          set +e
+          ssh -v deploy-target 'echo "连接成功: $(whoami)@$(hostname)"' > /tmp/ssh.log 2>&1
+          rc=$?
+          set -e
+          grep -Ei "Offering public key|Server accepts key|Authentications that can continue|Next authentication method|Permission denied|Connection (refused|timed out|closed)|Load key" /tmp/ssh.log | head -20 || true
+
+          if [ "$rc" != "0" ]; then
+            echo ""
+            echo "::error title=SSH 公钥认证失败::按顺序排查：① 服务器 authorized_keys 里是否包含上面打印的那个指纹（不一致说明 Secret 内容或公钥装错了）② 权限必须是 .ssh=700、authorized_keys=600、家目录不可被 group/other 写 ③ OpenCloudOS/RHEL 系需执行 restorecon -Rv 家目录/.ssh 修复 SELinux 上下文 ④ SSH_USER 是否与服务器实际用户名完全一致（不能有空格或换行）⑤ 该账号是否被锁定或过期（chage -l 用户名）"
+            exit 1
+          fi
+          echo "✅ SSH 连接成功"
+
+          ssh deploy-target 'which rsync >/dev/null && echo "✅ rsync 可用" || (echo "::error::服务器未安装 rsync，请执行 yum install -y rsync 或 apt install -y rsync"; exit 1)'
 
       # ---------------------------------------------------------------
       # 预检：把「目录不存在」「无写权限」这类问题翻译成可操作的中文提示，
