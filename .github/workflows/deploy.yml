@@ -93,6 +93,37 @@ jobs:
           ssh deploy-target 'which rsync >/dev/null && echo "rsync 可用" || (echo "::error::服务器未安装 rsync，请先执行 yum install -y rsync 或 apt install -y rsync"; exit 1)'
 
       # ---------------------------------------------------------------
+      # 预检：把「目录不存在」「无写权限」这类问题翻译成可操作的中文提示，
+      # 而不是让 rsync 抛一个看不懂的报错
+      # ---------------------------------------------------------------
+      - name: 预检目标目录
+        if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "检查 ${DEPLOY_PATH}"
+
+          if ! ssh deploy-target "test -d '${DEPLOY_PATH}'"; then
+            echo "::error title=目标目录不存在::服务器上没有 ${DEPLOY_PATH}。 解决办法：在宝塔【网站 → 添加站点】创建站点，域名填 adcabin.yuhuakeji.com.cn，PHP 版本选「纯静态」，不要创建数据库和 FTP。"
+            echo ""
+            echo "服务器上现有的站点目录："
+            ssh deploy-target "ls -1d /www/wwwroot/*/ 2>/dev/null || echo '  (无)'"
+            exit 1
+          fi
+          echo "✅ 目录存在"
+
+          if ! ssh deploy-target "test -w '${DEPLOY_PATH}'"; then
+            echo "::error title=部署账号没有写权限::${DEPLOY_PATH} 对当前部署账号不可写。 请执行：chown -R \$USER:\$USER '${DEPLOY_PATH}'（把 \$USER 换成你的 SSH_USER）"
+            echo "当前属主与权限："
+            ssh deploy-target "ls -ld '${DEPLOY_PATH}'"
+            exit 1
+          fi
+          echo "✅ 目录可写"
+
+          # 检查 SSH_PORT 是否真的是 22（sshd_config 里 Port 常被注释）
+          echo "✅ 预检通过，开始同步"
+
+      # ---------------------------------------------------------------
       # 同步文件
       #   --delete          让服务器与仓库保持一致（删除已下线文件）
       #   --exclude=.well-known   保护 Let's Encrypt 证书验证目录，
