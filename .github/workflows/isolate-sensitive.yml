@@ -77,8 +77,36 @@ jobs:
           FILES: ${{ inputs.files }}
           RESTORE: ${{ inputs.restore }}
         run: |
-          ssh deploy-target "mkdir -p '$QUARANTINE'"
-          echo "=== 隔离目录: $QUARANTINE ==="
+          # ---- 预检：隔离目录必须可写，否则给出可直接执行的修复命令 ----
+          # /home/deploy 通常归 root 所有（当初是以 root 建的 .ssh），
+          # 所以部署账号无法在里面新建目录，需要一条 root 命令一次性放开。
+          if ! ssh deploy-target "test -d '$QUARANTINE'"; then
+            echo "隔离目录不存在，尝试创建…"
+            if ! ssh deploy-target "mkdir -p '$QUARANTINE'" 2>/dev/null; then
+              U="${{ secrets.SSH_USER }}"
+              echo "::error title=隔离目录不可写::无法创建 $QUARANTINE —— 部署账号对上级目录没有写权限。"
+              echo ""
+              echo "请在服务器上以 root 执行下面这一条，然后重跑本工作流："
+              echo ""
+              echo "    mkdir -p $QUARANTINE && chown $U:$U /home/$U $QUARANTINE"
+              echo ""
+              echo "当前属主与权限："
+              ssh deploy-target "ls -ld /home/$U 2>&1; ls -ld '$SITE' 2>&1"
+              exit 1
+            fi
+          fi
+          if ! ssh deploy-target "test -w '$QUARANTINE'"; then
+            echo "::error title=隔离目录不可写::$QUARANTINE 存在但当前账号无写权限。请在服务器执行："
+            echo ""
+            echo "    chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} $QUARANTINE"
+            echo ""
+            ssh deploy-target "ls -ld '$QUARANTINE'"
+            exit 1
+          fi
+          echo "✅ 隔离目录可用: $QUARANTINE"
+
+          echo ""
+          echo "=== 开始处理 ==="
           for f in $FILES; do
             if [ "$RESTORE" = "RESTORE" ]; then
               src="$QUARANTINE/$f"; dst="$SITE/$f"
@@ -86,9 +114,9 @@ jobs:
               src="$SITE/$f"; dst="$QUARANTINE/$f"
             fi
             if ssh deploy-target "test -f '$src'"; then
-              ssh deploy-target "mv '$src' '$dst' && echo '  已移动: $f'"
+              ssh deploy-target "mv '$src' '$dst' && echo '  ✅ 已移动: $f'"
             else
-              echo "  跳过（源文件不存在）: $f"
+              echo "  -- 跳过（源文件不存在）: $f"
             fi
           done
           echo ""
