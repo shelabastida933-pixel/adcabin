@@ -6,6 +6,8 @@ Allow: /
 Disallow: /.git/
 Disallow: /.github/
 Disallow: /deploy/
+# 百度待推队列：部署时由 CI 写在服务器上（不在仓库里），内容只是本站 URL 清单。
+Disallow: /.baidu-pending.txt
 
 # 百度蜘蛛（含渲染型）
 User-agent: Baiduspider
