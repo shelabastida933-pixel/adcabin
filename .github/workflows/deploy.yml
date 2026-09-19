@@ -269,6 +269,9 @@ jobs:
           fi
           echo "--- 部署前：目标目录现有文件（不会被删除）---"
           ssh deploy-target "ls -la '${DEPLOY_PATH_COMPANY}'"
+          # 注意 *.html.md：GEO 用的 page.html.md 是给 AI 读的正文，必须部署。
+          # 曾经这里写的是 --exclude='*.md'，把 5 个 GEO 文件全挡在服务器外面（线上 404）。
+          # rsync 规则【先匹配先生效】，所以 --include='*.html.md' 必须排在排除之前。
           rsync -rlptzv --chmod=D755,F644 \
             --exclude='.git/' \
             --exclude='.github/' \
@@ -282,13 +285,16 @@ jobs:
             --exclude='tailwind.config.js' \
             --exclude='package.json' \
             --exclude='package-lock.json' \
-            --exclude='*.md' \
             --exclude='改造说明.txt' \
             --exclude='node_modules/' \
+            --include='*.html.md' \
+            --exclude='README.md' \
+            --exclude='CHANGELOG.md' \
+            --exclude='*.md' \
             -e "ssh -F $HOME/.ssh/config" \
             company/ deploy-target:"${DEPLOY_PATH_COMPANY}/"
           echo "--- 部署后：确认关键文件已就位 ---"
-          ssh deploy-target "test -f '${DEPLOY_PATH_COMPANY}/index.html' && echo '✅ index.html' ; test -f '${DEPLOY_PATH_COMPANY}/assets/tailwind.css' && echo '✅ assets/tailwind.css'"
+          ssh deploy-target "test -f '${DEPLOY_PATH_COMPANY}/index.html' && echo '✅ index.html' ; test -f '${DEPLOY_PATH_COMPANY}/assets/tailwind.css' && echo '✅ assets/tailwind.css' ; ls '${DEPLOY_PATH_COMPANY}'/*.md >/dev/null 2>&1 && echo '✅ GEO .md 已同步' || echo '::warning title=GEO .md 未同步::公司站目录下没有 .md 文件，AI 爬虫将读不到 Markdown 正文'"
 
       - name: 校验服务器上的文件
         if: steps.cfg.outputs.skip != 'true'
@@ -302,9 +308,17 @@ jobs:
       # ---------------------------------------------------------------
       - name: 线上验证
         if: steps.cfg.outputs.skip != 'true'
+        env:
+          DEPLOY_PATH_COMPANY: ${{ secrets.DEPLOY_PATH_COMPANY }}
         run: |
           HTTPS_URL="https://adcabin.yuhuakeji.com.cn/"
           HTTP_URL="http://adcabin.yuhuakeji.com.cn/"
+
+          # 公司站只在配置了目录并成功同步时才校验（否则那里可能还是旧内容）
+          COMPANY_LIVE=""
+          if [ -n "${DEPLOY_PATH_COMPANY:-}" ]; then
+            COMPANY_LIVE="https://yuhuakeji.com.cn/"
+          fi
 
           URL=""
           for base in "$HTTPS_URL" "$HTTP_URL"; do
@@ -344,6 +358,31 @@ jobs:
           qr=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${URL}assets/qr.png" || echo 000)
           echo "  assets/qr.png -> HTTP $qr"
           [ "$qr" = "200" ] || fail=1
+
+          # GEO 产物必须真的能访问：llms.txt 和 page.html.md 是给 AI 爬虫的入口。
+          # 加这一步是因为公司站的 rsync 曾用 --exclude='*.md' 把 .md 全挡在服务器外，
+          # 而部署本身"成功"、CI 全绿 —— 只有真去 curl 才发现线上是 404。
+          echo "--- GEO 产物校验 ---"
+          for u in "${URL}llms.txt" \
+                   "${URL}blog/juliang-api-keng.html.md" \
+                   "${URL}blog/juliang-roi-wei-0.html.md" \
+                   "${URL}sitemap.xml" \
+                   "${URL}robots.txt"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$u" || echo 000)
+            echo "  ${u#${URL}} -> HTTP $code"
+            [ "$code" = "200" ] || { echo "::error title=GEO 产物不可达::$u 返回 $code"; fail=1; }
+          done
+
+          if [ -n "${COMPANY_LIVE:-}" ]; then
+            for u in "${COMPANY_LIVE}llms.txt" \
+                     "${COMPANY_LIVE}index.html.md" \
+                     "${COMPANY_LIVE}sitemap.xml" \
+                     "${COMPANY_LIVE}robots.txt"; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$u" || echo 000)
+              echo "  [公司站] ${u#${COMPANY_LIVE}} -> HTTP $code"
+              [ "$code" = "200" ] || { echo "::error title=公司站 GEO 产物不可达::$u 返回 $code"; fail=1; }
+            done
+          fi
 
           if [ "$fail" = "0" ]; then
             echo "🎉 部署完成且验证通过"
@@ -424,21 +463,37 @@ jobs:
             ROOT_URLS="https://yuhuakeji.com.cn/"
           fi
 
-          # 投流舱：把改动的文件映射到对应 URL
+          # 投流舱：把改动的文件映射到对应 URL。
+          # 以 sitemap.xml 作为唯一权威 URL 清单 —— 之前是硬编码白名单，
+          # 结果新增的文章永远不会被推送（2026-09-19 那批 6 篇就漏推了）。
           ADC_URLS=""
           add_adc() { ADC_URLS="${ADC_URLS}${ADC_URLS:+$'\n'}$1"; }
-          if [ "$MANUAL" = "yes" ]; then
-            add_adc "https://adcabin.yuhuakeji.com.cn/"
-            add_adc "https://adcabin.yuhuakeji.com.cn/blog/"
-            add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html"
-            add_adc "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html"
-            add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html"
+
+          adc_maybe() {          # $1 = sitemap URL, $2 = 仓库内对应文件
+            if [ "$MANUAL" = "yes" ]; then add_adc "$1"; return; fi
+            echo "$CHANGED" | grep -qxF "$2" && add_adc "$1"
+          }
+
+          if [ -f sitemap.xml ]; then
+            while IFS= read -r u; do
+              [ -n "$u" ] || continue
+              case "$u" in
+                "https://adcabin.yuhuakeji.com.cn/")      f="index.html" ;;
+                "https://adcabin.yuhuakeji.com.cn/blog/") f="blog/index.html" ;;
+                "https://adcabin.yuhuakeji.com.cn/"*)     f="${u#https://adcabin.yuhuakeji.com.cn/}" ;;
+                *) continue ;;
+              esac
+              adc_maybe "$u" "$f"
+            done < <(grep -o '<loc>[^<]*</loc>' sitemap.xml | sed -e 's|<loc>||' -e 's|</loc>||')
           else
-            echo "$CHANGED" | grep -q '^index\.html$' && add_adc "https://adcabin.yuhuakeji.com.cn/"
-            echo "$CHANGED" | grep -q '^blog/index\.html$' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/"
-            echo "$CHANGED" | grep -q 'blog/juliang-xiaochengxu-toulou-liucheng\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html"
-            echo "$CHANGED" | grep -q 'blog/xiaochengxu-toulou-30tian\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html"
-            echo "$CHANGED" | grep -q 'blog/juliang-api-keng\.html' && add_adc "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html"
+            echo "::warning title=缺少 sitemap.xml::无法推导投流舱 URL 清单，本次跳过百度推送。"
+          fi
+
+          # 百度 API 配额是 10 条/天/站点，手动触发时全量推送可能超；截断并明确告知。
+          adc_n=$(printf '%s\n' "$ADC_URLS" | grep -c . || true)
+          if [ "$adc_n" -gt 10 ]; then
+            echo "::notice title=投流舱 URL 数超出百度配额::$adc_n 条 > 10 条/天，本次只推前 10 条，其余留给次日或走 sitemap。"
+            ADC_URLS=$(printf '%s\n' "$ADC_URLS" | head -n 10)
           fi
 
           # 百度 token 是【账号级】的，同一个 token 配不同 site 参数即可推多个站点。
