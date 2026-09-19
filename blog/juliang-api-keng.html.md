@@ -1,13 +1,10 @@
 # 巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法
 > 巨量引擎 Marketing API 开发实录：customer_center_account_list_v3 返回 accounts 而非 list、极速智投不能传出价参数、carousel_material_list 更新报错、dpa_word_list 不能为 null 等 9 个真实报错的原因与解法。
 
-
 作者：**投流舱 AdCabin**
  2026-09-18
  阅读约 **11 分钟**
  环境：**巨量引擎 Marketing API**
-
-
 
  这篇文章里的每一条报错，都是我在真实项目里撞到的——不是从文档里抄的。
  如果你正在对接巨量引擎 Marketing API，这些坑能帮你省掉至少两周的试错。
@@ -280,8 +277,6 @@ attribution_active_pay_intra_on...
 ## 一张表总结：动之前先读什么
 
 | 你想做的事 | 必须先读的字段 | 可能的阻挡 |
-
-|---|---|---|
 
 | 改出价 | `delivery_type`、投放模式 | 自动投放 / 周期稳投不支持 |
 

@@ -1,7 +1,7 @@
-<!-- 来源: https://yuhuakeji.com.cn/yuhua_landing.html -->
-宇华科技 · Yuhua Tech
-
 # Before she's born,
+宇华科技 · 让重要的情感时刻，永远真实
+
+宇华科技 · Yuhua Tech
 
  you've already
 
@@ -14,11 +14,6 @@
 
 [探索产品](#products)
  [我们守护什么 →](#moments)
-
-
-
-
-
 
  4D ULTRASOUND · 22W
  🩻
@@ -35,11 +30,9 @@ AI RENDERING
  全球经历抑郁困扰的人
 情感需求从未被认真对待
 
-
  60%
  现代人感到"经常性孤独"
 尽管我们比任何时代都更互联
-
 
  0
  科技能保留的重要情感时刻
@@ -71,9 +64,6 @@ One Promise.
 
 [体验演示 →](#)
 
-
-
-
  🩻
  ULTRASOUND
 
@@ -81,12 +71,6 @@ One Promise.
 
  👶
  AI · PREVIEW
-
-
-
-
-
-
 
  02
  🖼️
@@ -106,9 +90,6 @@ AI修复老照片，让褪色的记忆重新拥有温度
 - 生成高清版本，支持大尺寸打印
 
 [立即体验](#)
-
-
-
 
  03
  🎞️

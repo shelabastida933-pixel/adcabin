@@ -14,13 +14,13 @@
 - [企业级 AI 解决方案](https://yuhuakeji.com.cn/yuhuatob.html): 面向企业的 AI 服务
 - [品牌落地页](https://yuhuakeji.com.cn/yuhua_landing.html): 让重要的情感时刻永远真实
 
+
 ## 纯 Markdown 版本（供 AI 直接读取）
 
-- [index.html.md](https://yuhuakeji.com.cn/index.html.md): 宇华科技首页全文（公司愿景、产品矩阵、EmoCore™ 技术架构）
+- [demo.html.md](https://yuhuakeji.com.cn/demo.html.md): 宇华·回响 EmoCore 交互演示
 - [Aipic.html.md](https://yuhuakeji.com.cn/Aipic.html.md): 情感 AI 产品页：点亮生命每一刻
 - [yuhuatob.html.md](https://yuhuakeji.com.cn/yuhuatob.html.md): 企业级 AI 解决方案
 - [yuhua_landing.html.md](https://yuhuakeji.com.cn/yuhua_landing.html.md): 宇华科技品牌落地页：让重要的情感时刻永远真实
-- [demo.html.md](https://yuhuakeji.com.cn/demo.html.md): 交互演示页的文字说明（该页为 JavaScript 渲染，本文件补充说明其内容）
 
 ## Optional
 
