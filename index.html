@@ -220,6 +220,14 @@ h2{font-size:clamp(26px,3.4vw,40px);line-height:1.24;letter-spacing:-.9px;font-w
 }
 .sym .evi .n{font-size:19px;font-weight:800;color:#F87171;letter-spacing:-.5px;flex:none}
 .sym .evi .t{font-size:12.6px;color:var(--muted);line-height:1.5}
+/* 病征卡片 → 对应病征文的站内链接。首页是全站权重最高的页面，
+   权重不往文章流会明显拖累长尾收录，而卡片和文章本来就是一对应的。 */
+.sym .sym-more{
+  display:inline-block;margin-top:14px;font-size:13.4px;font-weight:600;
+  color:#8FB4FF;text-decoration:none;border-bottom:1px dashed rgba(143,180,255,.4);
+  padding-bottom:1px;transition:color .2s,border-color .2s;
+}
+.sym .sym-more:hover{color:#fff;border-bottom-color:#fff}
 .sym-foot{
   margin-top:22px;padding:20px 24px;border-radius:14px;display:flex;gap:18px;align-items:center;
   justify-content:space-between;flex-wrap:wrap;
@@ -853,6 +861,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">账户余额充足，计划看着一切正常，但日耗就是上不去。不是没钱，是<b>花不出去</b>。</p>
         <div class="evi"><span class="n">78%</span>
           <span class="t">41 个授权账户里 32 个零消耗<br>其中不少是"建了项目没建单元"</span></div>
+        <a class="sym-more" href="blog/juliang-rihao-shangbuqu.html">看日耗上不去的排查顺序 →</a>
       </div>
 
       <div class="sym reveal">
@@ -862,6 +871,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">一批素材安静地把预算花完，一个转化都没有。它们不会报警，在后台里和正常素材长得一模一样。</p>
         <div class="evi"><span class="n">40%</span>
           <span class="t">42 个有效素材里 28 个零激活<br>吃掉了四成消耗</span></div>
+        <a class="sym-more" href="blog/juliang-sucai-lingjihuo.html">看怎么找出在烧钱的素材 →</a>
       </div>
 
       <div class="sym reveal">
@@ -871,6 +881,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">点击率明明不差，用户也愿意点进来，但就是转化不了。<b>问题不在投放端，在承接端。</b></p>
         <div class="evi"><span class="n">2.03%</span>
           <span class="t">点击率 11.10% 属正常水平<br>但激活率只有 2.03%（正常 5~10%）</span></div>
+        <a class="sym-more" href="blog/juliang-jihuo-lv-di.html">看激活率低怎么修承接端 →</a>
       </div>
 
       <div class="sym reveal">
@@ -880,6 +891,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">项目状态是 ENABLE，看起来在跑，消耗永远是 0。巨量是「项目 → 单元 → 素材」三层结构，<b>缺一层就投不出去</b>。</p>
         <div class="evi"><span class="n">35 个</span>
           <span class="t">单个账户 40 个项目里<br>35 个是废弃的空壳项目</span></div>
+        <a class="sym-more" href="blog/juliang-xiangmu-lingxiaohao.html">看空壳项目怎么补齐 →</a>
       </div>
 
       <div class="sym reveal">
@@ -889,6 +901,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">"全年龄放开"不等于覆盖更广，而是<b>把钱同时花在对的人和错的人身上</b>。总有人群在稳定烧钱、从不转化。</p>
         <div class="evi"><span class="n">24%</span>
           <span class="t">41–50 岁人群占了 24% 消耗<br>贡献 0 个转化</span></div>
+        <a class="sym-more" href="blog/juliang-renqun-cuoqei.html">看零转化人群怎么排除 →</a>
       </div>
 
       <div class="sym reveal">
@@ -898,6 +911,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
         <p class="desc">所有 ROI 指标都是 0。先别急着下"投放没效果"的结论——<b>更可能是付费回传链路没通</b>，模型学不到谁会付费。</p>
         <div class="evi"><span class="n">0</span>
           <span class="t">小程序 ROI 系列指标全为 0<br>这是数据链路问题，不是投放问题</span></div>
+        <a class="sym-more" href="blog/juliang-roi-wei-0.html">看回传链路怎么自查 →</a>
       </div>
     </div>
 
