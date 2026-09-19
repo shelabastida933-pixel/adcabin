@@ -2,7 +2,8 @@ name: 部署官网到腾讯云服务器
 
 # 触发方式：
 #   1. push 到 main（我改完文案推上去就自动部署）
-#   2. 在 GitHub 网页上手动点「Run workflow」
+#   2. 在 GitHub 网页上手动点「Run workflow」（全量推 URL）
+#   3. 每天定时一次：只为把百度待推队列里积压的 URL 推出去
 on:
   push:
     branches: [main]
@@ -10,6 +11,12 @@ on:
       - '**.md'
       - 'deploy/**'
   workflow_dispatch:
+  schedule:
+    # 每天 01:30 UTC = 北京 09:30。
+    # 意义：百度配额只有 10 条/天，超出部分进待推队列；如果只靠 push 触发，
+    # 队列要等到「下次有人提交」才推进 —— 长期不提交就永远不推。
+    # 定时跑一次，即使没有任何代码改动也会把队列清空（CHANGED 为空，不重复推旧页面）。
+    - cron: '30 1 * * *'
 
 # 同一时间只跑一个部署，避免并发写同一台服务器
 concurrency:
@@ -415,21 +422,28 @@ jobs:
           # 百度 API 配额很小（当前账号 10 条/天/站点），重复推送未变更的 URL
           # 是纯浪费。因此 push 事件下用 git diff 判断哪些 HTML 变了，只推那些；
           # 手动触发（workflow_dispatch）没有 diff 可比，则推全部。
+          # ⚠️ schedule（每日定时）必须保持 CHANGED 为空：它的唯一目的是清空待推队列。
+          #    如果这里也按「全量」处理，就会每天重复推 10 条没改动的 URL，
+          #    把配额全烧在无意义的重复提交上（百度也不鼓励这么做）。
+          EVENT="${{ github.event_name }}"
           CHANGED=""
           MANUAL="no"
-          if [ "${{ github.event_name }}" != "push" ]; then
+          if [ "$EVENT" = "workflow_dispatch" ]; then
             MANUAL="yes"
-          elif git rev-parse HEAD^ >/dev/null 2>&1; then
-            CHANGED=$(git diff --name-only HEAD^ HEAD -- '*.html' || true)
-          else
-            MANUAL="yes"   # 首次提交等没有父提交的情况，按全量处理
+          elif [ "$EVENT" = "push" ]; then
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              CHANGED=$(git diff --name-only HEAD^ HEAD -- '*.html' || true)
+            else
+              MANUAL="yes"   # 首次提交等没有父提交的情况，按全量处理
+            fi
           fi
 
+          echo "--- 触发方式：$EVENT ---"
           echo "--- 本次改动的 HTML 文件 ---"
           if [ "$MANUAL" = "yes" ]; then
             echo "(手动触发 → 推送全部 URL)"
           else
-            echo "${CHANGED:-(无 → 不推送，不消耗配额)}"
+            echo "${CHANGED:-(无 → 只清待推队列，不消耗配额)}"
           fi
 
           # ---- 读取上次没推成功的 URL（跨运行保留，放在服务器上）----
