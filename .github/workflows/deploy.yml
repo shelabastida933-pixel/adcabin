@@ -453,6 +453,10 @@ jobs:
               echo "✅ [$name] 推送成功"
             else
               echo "::warning title=$name 推送失败::返回 $resp —— 常见原因：site 参数带了协议头、token 与站点不匹配、站点未验证、或当日配额（10 条/天）用尽。不影响网站运行。"
+              # 配额用尽时这些 URL 不会自动重推（本步骤只推「本次改动」的页面），
+              # 所以把清单打出来，方便第二天手工补推：python src/push_baidu.py --site <域名> --url ...
+              echo "--- 补推清单（次日可手工重推）---"
+              printf '%s\n' "$urls"
             fi
           }
 

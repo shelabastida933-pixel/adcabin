@@ -14,7 +14,6 @@
 - [企业级 AI 解决方案](https://yuhuakeji.com.cn/yuhuatob.html): 面向企业的 AI 服务
 - [品牌落地页](https://yuhuakeji.com.cn/yuhua_landing.html): 让重要的情感时刻永远真实
 
-
 ## 纯 Markdown 版本（供 AI 直接读取）
 
 - [index.html.md](https://yuhuakeji.com.cn/index.html.md): 宇华科技首页全文（公司愿景、产品矩阵、EmoCore™ 技术架构）

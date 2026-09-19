@@ -11,6 +11,10 @@
 - [6 种病征自测](https://adcabin.yuhuakeji.com.cn/#symptoms): 空转症/黑洞症/漏桶症/僵尸症/错位症/断链症，每条附真实数据
 - [服务与价格](https://adcabin.yuhuakeji.com.cn/#price): 账户诊断 ¥199（可全额抵扣）、单次深度优化 ¥999、Skill 定制 + MCP 接入 ¥1,999、月度陪跑 ¥2,999/月（首月不达标全额退）
 
+## 总纲：一张清单查完全部病征
+
+- [巨量引擎投放自检清单：30 分钟定位你的钱漏在哪](https://adcabin.yuhuakeji.com.cn/blog/juliang-toulou-zijian-qingdan.html.md): 6 种病征 + 判断阈值 + 该修哪一层，全部来自 41 个真实授权账户的取数。
+
 ## 6 种病征详解（每篇附真实数据与排查步骤）
 
 - [巨量引擎日耗上不去？先查这 5 个地方](https://adcabin.yuhuakeji.com.cn/blog/juliang-rihao-shangbuqu.html.md): 41 个账户 32 个零消耗、40 个项目 35 个是空壳。这不是优化问题，是结构问题。
