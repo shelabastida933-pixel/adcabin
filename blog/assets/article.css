@@ -93,6 +93,14 @@ tr:hover td{background:rgba(255,255,255,.018)}
 .related a{display:block;padding:15px 18px;border-radius:11px;background:var(--panel);
   border:1px solid var(--line2);text-decoration:none;color:#C9D6F5;font-size:14.8px;margin-bottom:10px;transition:all .2s}
 .related a:hover{border-color:var(--line);background:var(--panel2);transform:translateX(3px)}
+/* FAQ：必须真正可见 —— JSON-LD 里的 FAQPage 只有在页面上能看到同样的问答才不算违规 */
+.faq{margin:48px 0 0;padding-top:30px;border-top:1px solid var(--line2)}
+.faq h2{margin-top:0}
+.faq .qa{padding:20px 22px;border-radius:13px;background:var(--panel);border:1px solid var(--line2);margin-bottom:12px}
+.faq .qa:last-child{margin-bottom:0}
+.faq .qa h3{font-size:16.2px;font-weight:700;color:#fff;margin:0 0 10px;padding:0;position:static}
+.faq .qa h3::before{content:none}
+.faq .qa p{font-size:14.9px;color:var(--muted);line-height:1.82;margin:0}
 footer{border-top:1px solid var(--line2);padding:38px 0 50px;margin-top:56px}
 .foot-in{max-width:var(--maxw);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;
   gap:22px;flex-wrap:wrap;align-items:center;font-size:13.2px;color:var(--dim)}

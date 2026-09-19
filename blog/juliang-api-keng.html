@@ -27,19 +27,89 @@
       "@type": "Article",
       "headline": "巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法（含字段名）",
       "description": "巨量引擎 Marketing API 开发实录：字段名返回差异、自动投放单元不能传出价、素材列表更新报错、空值字段必须清理等 9 个真实报错的原因与解法。",
-      "author": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
-      "publisher": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
       "datePublished": "2026-09-18",
       "dateModified": "2026-09-18",
       "inLanguage": "zh-CN",
-      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html" }
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html"
+      }
     },
     {
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://adcabin.yuhuakeji.com.cn/" },
-        { "@type": "ListItem", "position": 2, "name": "实战笔记", "item": "https://adcabin.yuhuakeji.com.cn/blog/" },
-        { "@type": "ListItem", "position": 3, "name": "巨量引擎 Marketing API 踩坑记录" }
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "巨量引擎 Marketing API 踩坑记录"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎 API 返回的账户列表字段叫 list 吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不叫 list。customer_center_account_list_v3 返回的是 accounts，按 list 去读会拿到空数组，而且不会报错——这一点最坑，因为它看起来像是「没有账户」，实际是字段名不对。用之前先把返回体的字段名打出来看一眼。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "为什么极速智投的计划改不了出价？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "因为极速智投本身就是「无限预算 + 系统托管出价」的形态，接口不接受出价参数，硬传会被拒。同理，「给极速智投加预算」也无从下手——它本来就是无限预算。需要精细控制出价和预算的计划，不要选极速智投。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "更新素材列表报「请填写 carousel_id 或 item_id」怎么办？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "更新 carousel_material_list 时必须带上 carousel_id 或 item_id 里的至少一个，只传列表内容本身会被拒。这是更新接口和创建接口的参数要求不一致导致的。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "读取接口拿到的 null 能直接提交回去吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不能。像 dpa_word_list 这类字段，读出来是 null，原样提交会被服务端拒绝。正确做法是在提交前把 null 字段剔除，或者替换成空数组。「读了什么就写回什么」在 API 里是不成立的。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "用 API 建了项目，为什么消耗一直是 0？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "因为只建到了项目层，没有建投放单元。巨量是「项目 → 单元 → 素材」三层结构，缺任何一层都投不出去。批量建计划时必须把单元一起补齐，否则后台里项目状态显示正常，消耗却永远是 0。"
+          }
+        }
       ]
     }
   ]
@@ -344,6 +414,30 @@ attribution_active_pay_intra_on...</code></pre>
       <a href="./" class="btn btn-ghost">看更多实战笔记</a>
     </div>
   </div>
+
+  <section class="faq">
+    <h2 id="faq">常见问题</h2>
+    <div class="qa">
+      <h3>巨量引擎 API 返回的账户列表字段叫 list 吗？</h3>
+      <p>不叫 list。customer_center_account_list_v3 返回的是 accounts，按 list 去读会拿到空数组，而且不会报错——这一点最坑，因为它看起来像是「没有账户」，实际是字段名不对。用之前先把返回体的字段名打出来看一眼。</p>
+    </div>
+    <div class="qa">
+      <h3>为什么极速智投的计划改不了出价？</h3>
+      <p>因为极速智投本身就是「无限预算 + 系统托管出价」的形态，接口不接受出价参数，硬传会被拒。同理，「给极速智投加预算」也无从下手——它本来就是无限预算。需要精细控制出价和预算的计划，不要选极速智投。</p>
+    </div>
+    <div class="qa">
+      <h3>更新素材列表报「请填写 carousel_id 或 item_id」怎么办？</h3>
+      <p>更新 carousel_material_list 时必须带上 carousel_id 或 item_id 里的至少一个，只传列表内容本身会被拒。这是更新接口和创建接口的参数要求不一致导致的。</p>
+    </div>
+    <div class="qa">
+      <h3>读取接口拿到的 null 能直接提交回去吗？</h3>
+      <p>不能。像 dpa_word_list 这类字段，读出来是 null，原样提交会被服务端拒绝。正确做法是在提交前把 null 字段剔除，或者替换成空数组。「读了什么就写回什么」在 API 里是不成立的。</p>
+    </div>
+    <div class="qa">
+      <h3>用 API 建了项目，为什么消耗一直是 0？</h3>
+      <p>因为只建到了项目层，没有建投放单元。巨量是「项目 → 单元 → 素材」三层结构，缺任何一层都投不出去。批量建计划时必须把单元一起补齐，否则后台里项目状态显示正常，消耗却永远是 0。</p>
+    </div>
+  </section>
 
   <div class="related">
     <h3>相关阅读</h3>

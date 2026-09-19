@@ -27,19 +27,89 @@
       "@type": "Article",
       "headline": "小程序投流 30 天实录：40% 预算被零激活素材烧掉，附三步定位法",
       "description": "我自己小程序账户的真实投放诊断：41 个账户 78% 在空转、42 个素材里 28 个零激活烧掉 40% 预算、素材平均只被看 2.15 秒。",
-      "author": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
-      "publisher": { "@type": "Organization", "name": "投流舱 AdCabin", "url": "https://adcabin.yuhuakeji.com.cn/" },
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
       "datePublished": "2026-09-18",
       "dateModified": "2026-09-18",
       "inLanguage": "zh-CN",
-      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html" }
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html"
+      }
     },
     {
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://adcabin.yuhuakeji.com.cn/" },
-        { "@type": "ListItem", "position": 2, "name": "实战笔记", "item": "https://adcabin.yuhuakeji.com.cn/blog/" },
-        { "@type": "ListItem", "position": 3, "name": "小程序投流 30 天实录" }
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "小程序投流 30 天实录"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "小程序投流 30 天，最大的浪费在哪一层？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "在素材层。42 个有效素材里有 28 个零激活，这 28 个吃掉了 40% 的消耗。它们不会报警，在后台里和正常素材长得一模一样，只有把素材按「消耗 ÷ 激活」排序才会暴露出来。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么判断问题在投放端还是承接端？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "看漏斗。点击率正常而激活率极低，问题在承接端（落地页/小程序）；点击率本身就很低，才轮到投放端（出价、定向、素材钩子）。我这边点击率 11.10% 属正常水平，但激活率只有 2.03%，所以是承接端的问题。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "激活率多少算正常？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "一般参考区间是 5%~10%。我自己的账户只有 2.03%，明显偏低。注意要先确认回传链路是通的，否则算出来的激活率本身就不准。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "41 个账户 78% 在空转是什么意思？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "41 个授权账户里有 32 个是零消耗的。其中不少是「建了项目没建单元」造成的，项目状态显示正常，但根本没有可投放的实体。所以看账户层要先看消耗，不要只看计划数量。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "应该先修承接还是先加预算？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "先修承接。激活率是 2% 的时候，花双倍预算买到的还是同一个 2%，等于把钱倒进漏水的桶。把承接修到 8%，同样预算下激活数就能翻好几倍，而且这个提升不依赖平台算法，是你自己能控制的。"
+          }
+        }
       ]
     }
   ]
@@ -289,6 +359,30 @@
       <a href="./" class="btn btn-ghost">看更多实战笔记</a>
     </div>
   </div>
+
+  <section class="faq">
+    <h2 id="faq">常见问题</h2>
+    <div class="qa">
+      <h3>小程序投流 30 天，最大的浪费在哪一层？</h3>
+      <p>在素材层。42 个有效素材里有 28 个零激活，这 28 个吃掉了 40% 的消耗。它们不会报警，在后台里和正常素材长得一模一样，只有把素材按「消耗 ÷ 激活」排序才会暴露出来。</p>
+    </div>
+    <div class="qa">
+      <h3>怎么判断问题在投放端还是承接端？</h3>
+      <p>看漏斗。点击率正常而激活率极低，问题在承接端（落地页/小程序）；点击率本身就很低，才轮到投放端（出价、定向、素材钩子）。我这边点击率 11.10% 属正常水平，但激活率只有 2.03%，所以是承接端的问题。</p>
+    </div>
+    <div class="qa">
+      <h3>激活率多少算正常？</h3>
+      <p>一般参考区间是 5%~10%。我自己的账户只有 2.03%，明显偏低。注意要先确认回传链路是通的，否则算出来的激活率本身就不准。</p>
+    </div>
+    <div class="qa">
+      <h3>41 个账户 78% 在空转是什么意思？</h3>
+      <p>41 个授权账户里有 32 个是零消耗的。其中不少是「建了项目没建单元」造成的，项目状态显示正常，但根本没有可投放的实体。所以看账户层要先看消耗，不要只看计划数量。</p>
+    </div>
+    <div class="qa">
+      <h3>应该先修承接还是先加预算？</h3>
+      <p>先修承接。激活率是 2% 的时候，花双倍预算买到的还是同一个 2%，等于把钱倒进漏水的桶。把承接修到 8%，同样预算下激活数就能翻好几倍，而且这个提升不依赖平台算法，是你自己能控制的。</p>
+    </div>
+  </section>
 
   <div class="related">
     <h3>相关阅读</h3>
