@@ -409,6 +409,7 @@ jobs:
         env:
           BAIDU_TOKEN: ${{ secrets.BAIDU_TOKEN }}
           BAIDU_TOKEN_ADCABIN: ${{ secrets.BAIDU_TOKEN_ADCABIN }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           # ---- 只推「本次真正改动」的页面，节省 10 条/天的配额 ----
           # 百度 API 配额很小（当前账号 10 条/天/站点），重复推送未变更的 URL
@@ -431,8 +432,22 @@ jobs:
             echo "${CHANGED:-(无 → 不推送，不消耗配额)}"
           fi
 
+          # ---- 读取上次没推成功的 URL（跨运行保留，放在服务器上）----
+          # 为什么需要它：百度配额只有 10 条/天，而「只推本次改动」意味着
+          # 当天没推成的 URL 下次不会再出现 —— 不改动的页面永远不会被重推，
+          # 于是一次配额用尽 = 这些 URL 永久漏推。用一个小队列兜住这件事。
+          PENDING_FILE="${DEPLOY_PATH}/.baidu-pending.txt"
+          ADC_PENDING=""
+          if [ -n "${DEPLOY_PATH:-}" ]; then
+            ADC_PENDING=$(ssh deploy-target "cat '${PENDING_FILE}' 2>/dev/null || true")
+            if [ -n "$ADC_PENDING" ]; then
+              echo "--- 上次遗留待推（$(printf '%s\n' "$ADC_PENDING" | grep -c .) 条）---"
+              printf '%s\n' "$ADC_PENDING"
+            fi
+          fi
+
           push_site() {
-            local name="$1" token="$2" site="$3" urls="$4"
+            local name="$1" token="$2" site="$3" urls="$4" ndone
             # 顺序要紧：先判断有没有要推的 URL。否则会用空内容调一次 API，
             # 返回 {"error":400,"message":"empty content"} 并产生误导性警告。
             if [ -z "$urls" ]; then
@@ -443,21 +458,23 @@ jobs:
               echo "::notice title=跳过 $name 推送::未配置 token。到百度站长平台（ziyuan.baidu.com）「普通收录 → API 提交」获取后，添加名为 BAIDU_TOKEN 的 Secret 即可。"
               return 0
             fi
-            echo "[$name] 将推送 $(printf '%s\n' "$urls" | grep -c .) 条 URL"
+            local nsent
+            nsent=$(printf '%s\n' "$urls" | grep -c .)
+            echo "[$name] 将推送 $nsent 条 URL"
             resp=$(curl -s --max-time 30 -H 'Content-Type:text/plain' \
               --data-binary "$urls" \
               "http://data.zz.baidu.com/urls?site=${site}&token=${token}" \
               || echo '{"error":"curl failed"}')
             echo "[$name] 返回: $resp"
-            if echo "$resp" | grep -q '"success"'; then
-              echo "✅ [$name] 推送成功"
-            else
-              echo "::warning title=$name 推送失败::返回 $resp —— 常见原因：site 参数带了协议头、token 与站点不匹配、站点未验证、或当日配额（10 条/天）用尽。不影响网站运行。"
-              # 配额用尽时这些 URL 不会自动重推（本步骤只推「本次改动」的页面），
-              # 所以把清单打出来，方便第二天手工补推：python src/push_baidu.py --site <域名> --url ...
-              echo "--- 补推清单（次日可手工重推）---"
-              printf '%s\n' "$urls"
+            ndone=$(printf '%s' "$resp" | grep -o '"success":[0-9]*' | grep -o '[0-9]*' || true)
+            # 只有「全部推成功」才算成功。部分成功（success < 提交数）也要保留队列，
+            # 否则没被接收的那几条就永远丢了。
+            if [ -n "$ndone" ] && [ "$ndone" = "$nsent" ]; then
+              echo "✅ [$name] 推送成功（$ndone/$nsent）"
+              return 0
             fi
+            echo "::warning title=$name 推送失败::返回 $resp —— 常见原因：site 参数带了协议头、token 与站点不匹配、站点未验证、或当日配额（10 条/天）用尽。不影响网站运行；未推成功的 URL 会进入队列，次日自动重推。"
+            return 1
           }
 
           # 公司站：只有一个首页。仅当 company/ 下的【HTML】有改动（或手动触发）时才推。
@@ -499,21 +516,56 @@ jobs:
             echo "::warning title=缺少 sitemap.xml::无法推导投流舱 URL 清单，本次跳过百度推送。"
           fi
 
-          # 百度 API 配额是 10 条/天/站点，手动触发时全量推送可能超；截断并明确告知。
+          # 合并队列与本次改动，按序去重。
+          # 顺序是 FIFO：队列里的排前面（它们等得更久，先出队，避免被新 URL 饿死）。
+          # URL 里不含空格，所以可以直接按词遍历。
+          adc_merge() {          # $1 = 先出队的（更旧），$2 = 后加入的（更新）
+            local seen=" " u out=""
+            for u in $1 $2; do
+              case "$seen" in *" $u "*) continue ;; esac
+              seen="$seen$u "
+              out="${out}${out:+$'\n'}$u"
+            done
+            printf '%s' "$out"
+          }
+          ADC_URLS=$(adc_merge "${ADC_PENDING:-}" "$ADC_URLS")
+
+          # 百度 API 配额是 10 条/天/站点；超出的部分进队列，下次接着推。
+          ADC_REST=""
           adc_n=$(printf '%s\n' "$ADC_URLS" | grep -c . || true)
           if [ "$adc_n" -gt 10 ]; then
-            echo "::notice title=投流舱 URL 数超出百度配额::$adc_n 条 > 10 条/天，本次只推前 10 条，其余留给次日或走 sitemap。"
+            ADC_REST=$(printf '%s\n' "$ADC_URLS" | tail -n +11)
             ADC_URLS=$(printf '%s\n' "$ADC_URLS" | head -n 10)
+            echo "::notice title=投流舱 URL 数超出百度配额::$adc_n 条 > 10 条/天，本次推 10 条，剩余 $(printf '%s\n' "$ADC_REST" | grep -c .) 条进队列次日重推。"
           fi
 
           # 百度 token 是【账号级】的，同一个 token 配不同 site 参数即可推多个站点。
           # 因此默认复用 BAIDU_TOKEN；BAIDU_TOKEN_ADCABIN 仅作为可选覆盖保留。
           push_site "公司官网" "${BAIDU_TOKEN}" "yuhuakeji.com.cn" "$ROOT_URLS"
-          push_site "投流舱" "${BAIDU_TOKEN_ADCABIN:-$BAIDU_TOKEN}" "adcabin.yuhuakeji.com.cn" "$ADC_URLS"
+          ADC_OK=1
+          push_site "投流舱" "${BAIDU_TOKEN_ADCABIN:-$BAIDU_TOKEN}" "adcabin.yuhuakeji.com.cn" "$ADC_URLS" || ADC_OK=0
+
+          # ---- 回写队列：成功的只留超额部分，失败的整批留 ----
+          if [ -n "${DEPLOY_PATH:-}" ]; then
+            if [ "$ADC_OK" = "1" ]; then
+              NEW_PENDING="$ADC_REST"
+            else
+              NEW_PENDING=$(adc_merge "$ADC_URLS" "${ADC_REST:-}")
+            fi
+            if [ -n "$NEW_PENDING" ]; then
+              printf '%s\n' "$NEW_PENDING" | ssh deploy-target "cat > '${PENDING_FILE}'"
+              echo "--- 已入队，次日自动重推（$(printf '%s\n' "$NEW_PENDING" | grep -c .) 条）---"
+              printf '%s\n' "$NEW_PENDING"
+            else
+              ssh deploy-target "rm -f '${PENDING_FILE}'"
+              echo "✅ 队列已清空（没有待推 URL）"
+            fi
+          fi
 
           echo ""
           echo "说明：sitemap 提交（站长平台网页端一次性操作）不占上述 API 配额，适合批量发现；"
-          echo "      API 推送配额仅 10 条/天/站点，因此本步骤只推本次真正改动的页面。"
+          echo "      API 推送配额仅 10 条/天/站点，因此本步骤只推本次真正改动的页面，"
+          echo "      推不下的自动进队列，次日接着推，不会漏。"
 
       - name: 部署摘要
         if: steps.cfg.outputs.skip != 'true' && always()
