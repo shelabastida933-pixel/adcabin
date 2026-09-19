@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎激活率只有 2%？点击率正常说明问题不在投放｜投流舱</title>
+<meta name="description" content="点击率 11.10% 属于正常水平，激活率却只有 2.03%（行业正常 5%~10%）。97.8% 的人点进来之后走了。这篇讲怎么用漏斗判断问题在投放端还是承接端，以及为什么这时候加预算等于把钱倒进漏水的桶。">
+<meta name="keywords" content="巨量引擎激活率低,小程序激活率,广告点击率高转化低,落地页转化率低,巨量引擎激活成本高,小程序投放转化差,广告承接">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-jihuo-lv-di.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="激活率只有 2%？先别加预算">
+<meta property="og:description" content="点击率 11.10% 正常、激活率 2.03% 异常——这道漏斗能告诉你问题在哪一端。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-jihuo-lv-di.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "激活率 2.03%：点击率正常，说明问题不在投放端",
+      "description": "点击率 11.10% 属于正常水平，激活率却只有 2.03%（行业正常 5%~10%）。97.8% 的人点进来之后走了。这篇讲怎么用漏斗判断问题在投放端还是承接端，以及为什么这时候加预算等于把钱倒进漏水的桶。",
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-jihuo-lv-di.html"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "漏桶症：激活率过低"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎点击率正常但激活率很低，问题出在哪？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "大概率在承接端（落地页或小程序），不是投放端。判断准则：点击率正常加激活率低，说明素材钩子有效、用户愿意点，流失发生在点击之后。此时优化出价和定向收效有限，应先修落地页与素材的一致性、加载速度和授权摩擦。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "小程序广告的激活率多少算正常？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "行业正常水平大致在 5%~10%。如果低于 3% 就值得系统排查。需要注意「激活」的定义：如果定义为付费或完成全流程，数值天然会低，要与行业口径对齐后再比较。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "激活率低的时候应该加预算吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不建议。激活率 2% 时加双倍预算，买到的还是同样的 2%，等于把钱倒进漏水的桶。更划算的顺序是先修承接把激活率提升到接近行业水平，再加投放——同样预算下激活数可以显著放大。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/article.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#symptoms">6 种病征</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">¥199 账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 漏桶症：激活率过低
+</div>
+
+<article>
+  <h1>激活率 2.03%：点击率正常，说明问题不在投放端</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>9 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">这是最容易被误判的一种病。<strong>因为它的表面数据很好看：点击率 11.10%，属于正常偏优的水平。</strong>于是一直在优化投放——调出价、换定向、加预算，但激活率始终在 2% 上下。原因是钱花错了地方。</div>
+
+  <h2 id="funnel">先看这道漏斗</h2>
+
+  <p>把我的账户近 14 天数据拉成完整漏斗，问题一眼就能看出来：</p>
+
+  <table>
+    <tr><th>环节</th><th>数值</th><th>转化率</th><th>判断</th></tr>
+    <tr><td>展示</td><td>3,695</td><td>—</td><td>—</td></tr>
+    <tr><td>播放</td><td>2,133</td><td>57.7%</td><td>正常</td></tr>
+    <tr><td>3 秒播放</td><td>620</td><td>29.1%</td><td>偏低</td></tr>
+    <tr><td>点击</td><td>410</td><td>66.1%</td><td><b>很好</b></td></tr>
+    <tr><td>激活</td><td>9</td><td><b>2.2%</b></td><td><b>异常</b></td></tr>
+  </table>
+
+  <p>看清楚：<strong>从 3 秒播放到点击的转化率是 66.1%，这个数字很好。</strong>说明素材的钩子是有效的，用户愿意点。但点进来之后，97.8% 的人走了。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v green">11.10%</div><div class="l">点击率</div><div class="x">正常偏优</div></div>
+    <div class="stat"><div class="v red">2.03%</div><div class="l">整体激活率</div><div class="x">行业正常 5%~10%</div></div>
+    <div class="stat"><div class="v red">57%</div><div class="l">零转化天数占比</div><div class="x">14 天里 8 天白花钱</div></div>
+    <div class="stat"><div class="v amber">2.15秒</div><div class="l">素材平均播放时长</div><div class="x">754 人没看完 25%</div></div>
+  </div>
+
+  <h2 id="rule">一个判断准则：看点击率决定修哪一端</h2>
+
+  <div class="box key">
+    <span class="t">这条准则能省掉大量试错</span>
+    <b>点击率正常 + 激活率低 → 问题在承接端</b>（落地页 / 小程序），别动投放。
+    <b>点击率本身就低 → 问题在素材/定向</b>，先修投放端。
+    两个都低 → 先修素材拿到点击，再修承接。顺序反了会两头都不好。
+  </div>
+
+  <p>把这条准则套到我的账户上：点击率 11.10% 完全正常，所以问题几乎一定出在落地页或小程序的激活链路上，<strong>而不是出价、定向或素材。</strong></p>
+
+  <h2 id="evidence">还有一个佐证：用户是被「骗」进来的</h2>
+
+  <p>素材平均播放时长只有 <strong>2.15 秒</strong>——754 人连视频的 25% 都没看完就划走了。</p>
+
+  <p>这说明什么？用户是<strong>被钩子吸引点进来的，而不是真的被说服「这事对我有用」</strong>。这种心态进来的流量，承接环节稍微有一点摩擦就会流失——等加载、要授权、要注册，任何一步都可能让人走掉。</p>
+
+  <h2 id="math">算一笔账：为什么应该先修承接</h2>
+
+  <table>
+    <tr><th>做法</th><th>结果</th></tr>
+    <tr><td>先加投放预算</td><td>花双倍的钱，激活率还是 2% —— 等于把钱倒进漏水的桶</td></tr>
+    <tr><td>先修承接，再放量</td><td>激活率从 2% 提到 8%，<b>同样预算下激活翻 4 倍</b></td></tr>
+  </table>
+
+  <div class="box key">
+    <span class="t">顺序就是一切</span>
+    先修承接（激活率 2% → 8%），再加投放。
+    顺序反过来，你花的是双倍预算买同一个 2%。
+  </div>
+
+  <h2 id="checklist">承接端该查什么（按可能性排序）</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>落地页与素材是否一致</h4><p>素材里承诺的东西，落地页首屏有没有兑现。不一致是流失的头号原因——用户觉得被骗了。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>加载速度</h4><p>尤其对中老年用户，加载慢几秒就会直接关掉。这是我排查时最先看的一项。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>授权与注册的摩擦</h4><p>每多一步授权就多一层流失。检查能不能把授权往后挪，先让用户体验到价值。</p></div></div>
+
+  <div class="step"><div class="n">4</div><div class="c"><h4>「激活」的定义是否过严</h4><p>如果激活要求「付费」或「完成全部流程」，那它本身就会很低。确认你的激活定义和行业口径是否一致。</p></div></div>
+
+  <div class="step"><div class="n">5</div><div class="c"><h4>落地页埋点数据</h4><p>看用户在具体哪一步跳出。这一步能直接把范围从「整个落地页」缩小到「某一个交互」。</p></div></div>
+
+  <h2 id="trap">一个我踩过的相关坑：先把回传链路确认了</h2>
+
+  <p>在动落地页之前，先花十分钟确认一件事：<strong>转化回传链路是通的吗？</strong>如果你的激活数本身就没被正确回传，那你看到的 2% 可能不是真实值，优化方向就完全错了。</p>
+
+  <p>判断方法：如果所有 ROI 指标都是 0，而激活数也不为 0，那大概率是回传配置问题，不是投放问题。这一条我在「断链症」那篇里展开。</p>
+
+  <div class="cta">
+    <h3>想知道你的钱漏在哪一环？</h3>
+    <p>我可以把你的完整漏斗拉出来——展示 → 播放 → 点击 → 激活逐环节算转化率，判断问题在投放端还是承接端，并给出该先修哪一项。¥199，可全额抵扣后续服务费。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码做 ¥199 账户诊断</a>
+      <a href="../#symptoms" class="btn btn-ghost">看 6 种病征自测</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-roi-wei-0.html">→ 断链症：ROI 全是 0，不一定是投放没效果</a>
+    <a href="juliang-sucai-lingjihuo.html">→ 黑洞症：零激活素材吃掉了 40% 预算</a>
+    <a href="juliang-renqun-cuoqei.html">→ 错位症：一个年龄段占 24% 消耗、0 转化</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营的微信小程序广告账户，经巨量引擎官方 Marketing API 取数，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业与量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

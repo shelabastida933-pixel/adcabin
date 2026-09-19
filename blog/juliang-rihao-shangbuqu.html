@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎日耗上不去怎么办：78% 的账户在空转｜投流舱</title>
+<meta name="description" content="余额充足、计划正常，但日耗就是上不去——这不是投放技巧问题。我自己账户 41 个授权账户里 32 个零消耗，单个账户 40 个项目里 35 个是空壳。附完整排查顺序与三个真实原因。">
+<meta name="keywords" content="巨量引擎日耗上不去,巨量广告跑不出量,余额充足没消耗,巨量引擎不出量怎么办,巨量引擎计划不消耗,广告消耗起不来">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-rihao-shangbuqu.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="巨量引擎日耗上不去？78% 的账户在空转">
+<meta property="og:description" content="41 个账户 32 个零消耗、40 个项目 35 个是空壳。这不是优化问题，是结构问题。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-rihao-shangbuqu.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "巨量引擎日耗上不去？先查这 5 个地方",
+      "description": "余额充足、计划正常，但日耗就是上不去——这不是投放技巧问题。我自己账户 41 个授权账户里 32 个零消耗，单个账户 40 个项目里 35 个是空壳。附完整排查顺序与三个真实原因。",
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-rihao-shangbuqu.html"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "空转症：日耗上不去"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎日耗上不去，最可能是什么原因？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "最常见的是账户结构不完整：只建了项目没建单元。巨量是「项目 → 单元 → 素材」三层结构，缺一层就没有可投放实体，消耗永远是 0，但项目状态仍显示正常。其次才是关键词池过小和出价无竞争力。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "余额充足但消耗很低，是账户被限流了吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "多数情况不是限流，而是结构或竞价问题。建议按顺序排查：单元数是否齐全、关键词池真实搜索量、用「展示量 = 日消耗 ÷ CPM」验证是否属于正常量级、素材挂载时间是否过久。四项都无异常再考虑出价。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "提出价能提升日耗吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "未必，且可能适得其反。如果关键词池本身搜索量很低，提出价只是用更贵的价格抢同样少的流量，成本上升而量不变。另外极速智投和周期稳投类型的计划不支持修改出价，调接口会返回「自动投放单元不能包含出价参数」。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/article.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#symptoms">6 种病征</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">¥199 账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 空转症：日耗上不去
+</div>
+
+<article>
+  <h1>巨量引擎日耗上不去？先查这 5 个地方</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>8 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">账户余额一千多，计划状态一切正常，日耗却只有十几块。我盯着后台看了很久，一直以为是出价太低、定向太窄。直到把所有授权账户拉成一张表，才发现真正的原因在更上面一层——<strong>绝大多数字段不是「跑不动」，而是「根本没在跑」。</strong></div>
+
+  <h2 id="symptom">先看症状：你的账户属于哪一种</h2>
+
+  <p>「日耗上不去」这句话背后至少有三种完全不同的病。混在一起看，就会一直修错地方。</p>
+
+  <table>
+    <tr><th>表面现象</th><th>真实原因</th><th>该修哪里</th></tr>
+    <tr><td>余额充足，但消耗极低</td><td>计划建得不完整，投不出去</td><td>账户结构层</td></tr>
+    <tr><td>计划在跑，但量级很小</td><td>出价没竞争力 / 关键词池太小</td><td>出价与词包</td></tr>
+    <tr><td>消耗忽高忽低，不稳</td><td>素材老化，系统找不到稳定转化人群</td><td>素材层</td></tr>
+  </table>
+
+  <div class="stats">
+    <div class="stat"><div class="v red">78%</div><div class="l">授权账户零消耗</div><div class="x">41 个账户里 32 个</div></div>
+    <div class="stat"><div class="v red">87%</div><div class="l">空壳项目占比</div><div class="x">40 个项目里 35 个废弃</div></div>
+    <div class="stat"><div class="v amber">¥13.69</div><div class="l">单账户日耗</div><div class="x">余额 ¥1,339 却花不出去</div></div>
+    <div class="stat"><div class="v amber">¥44</div><div class="l">CPM</div><div class="x">量级 = 钱 ÷ CPM</div></div>
+  </div>
+
+  <h2 id="reason1">原因一：项目建了，单元没建（最常见）</h2>
+
+  <p>巨量引擎是<strong>三层结构：项目 → 单元 → 素材</strong>。很多人（包括我自己）批量建计划时只建到项目层就停了——后台里项目状态显示 <code>ENABLE</code>，看起来一切正常，但<strong>没有单元就等于没有可投放的实体，消耗永远是 0</strong>。</p>
+
+  <p>我那个主力账户里，40 个项目有 35 个是废弃的空壳项目。它们安静地躺在列表里，占着位置，吃掉了我的注意力，还让我误判了「我已经建了很多计划」。</p>
+
+  <div class="box key">
+    <span class="t">怎么快速确认</span>
+    在 <span class="path">竞价投放 → 搜索 → 单元</span> 里看单元列表。
+    如果单元数远少于项目数，差额就是空壳。
+    更直接的办法：看项目的 <code>消耗</code> 字段，长期为 0 的基本都是这个原因。
+  </div>
+
+  <h2 id="reason2">原因二：关键词池本身就太小</h2>
+
+  <p>搜索模式下，量级的上限由<strong>关键词池的搜索量</strong>决定。我在搜索侧铺了 334 个关键词，听起来不少——但平均到每个词，<strong>每天的曝光不到 1 次</strong>。</p>
+
+  <pre><code>量级 ≈ 关键词池搜索量 × 你的竞价胜率
+334 个垂直词 ÷ 总曝光 5,830 = 每词每天不到 1 次曝光</code></pre>
+
+  <p>而且这些词的搜索量本身就极低。这意味着：<strong>不是你的出价不够高，是这个词池里根本没有那么多人在搜。</strong>这时候提出价，只会把成本推高，量还是上不来。</p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 一个反直觉的结论</span>
+    在词池过小时提出价，等于用更贵的价格去抢同样少的流量。
+    正确做法是先扩词（长尾词、问答词、场景词），把池子做大，再谈出价。
+  </div>
+
+  <h2 id="reason3">原因三：钱没少花，是 CPM 太贵</h2>
+
+  <p>算一笔账就清楚了。假设你想把日展示量做到 3,000，在 CPM ¥44 的情况下需要多少钱：</p>
+
+  <table>
+    <tr><th>目标日展示量</th><th>需要的日消耗</th></tr>
+    <tr><td>312</td><td>¥13.69（我当时的实际值）</td></tr>
+    <tr><td>1,140</td><td>¥50</td></tr>
+    <tr><td>2,280</td><td>¥100</td></tr>
+    <tr><td>6,830</td><td>¥300</td></tr>
+  </table>
+
+  <p>所以「展示量低」这个问题的答案是一道乘法题：<strong>展示量 = 钱 ÷ CPM</strong>。钱只有十几块、CPM 又要四十多、词池还很小——三者相乘，必然只有几百次展示。</p>
+
+  <div class="box">
+    <span class="t">所以「日耗上不去」有两种截然不同的处境</span>
+    <b>有钱花不出去</b>：余额充足但消耗低 → 结构问题（本文重点），修完立刻能跑量。
+    <b>钱不够花</b>：预算本来就小 → 这不是问题，是按比例的正常结果。
+    先分清是哪一种，再决定要不要「想办法提量」。
+  </div>
+
+  <h2 id="checklist">完整排查顺序（照着做）</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>先看单元数，不看项目数</h4><p>在单元列表里数一遍。单元数远少于项目数 → 大量空壳项目，先补齐单元。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>看关键词池的真实搜索量</h4><p>把关键词按曝光排序，看有多少词是长期零曝光的。占比超过一半说明池子太小。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>算一遍「展示量 = 钱 ÷ CPM」</h4><p>用当前的日消耗和 CPM 算出理论展示量，和实际值对比。对得上就说明没有异常，只是量级本来就小。</p></div></div>
+
+  <div class="step"><div class="n">4</div><div class="c"><h4>检查素材挂载时间</h4><p>素材超过 2 周没更新，系统会逐渐减少分配。这会让消耗变得不稳定。</p></div></div>
+
+  <div class="step"><div class="n">5</div><div class="c"><h4>最后才动出价</h4><p>以上四步都确认无异常，才轮到调出价——而且要用小步试（比如 +10%），观察 3 天。</p></div></div>
+
+  <h2 id="trap">一个必须提醒的坑：有些计划根本改不了出价</h2>
+
+  <p>如果你想「提出价试试」，先读计划的投放类型。极速智投（自动投放）的计划，出价由系统托管——调接口会直接返回：</p>
+
+  <pre><code>自动投放单元不能包含出价参数</code></pre>
+
+  <p>周期稳投（<code>delivery_type=DURATION</code>）同样不支持改价。这类计划想提量，只能<strong>从素材侧下手</strong>——补新素材、扩标题数量，而不是硬改出价。</p>
+
+  <div class="cta">
+    <h3>想知道你的账户卡在哪一层？</h3>
+    <p>我可以拉你的真实账户数据，把「空壳项目 / 词池规模 / CPM 与量级」这三件事算清楚，告诉你量级上不去的真正原因。¥199，可全额抵扣后续服务费。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码做 ¥199 账户诊断</a>
+      <a href="../#symptoms" class="btn btn-ghost">看 6 种病征自测</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-xiangmu-lingxiaohao.html">→ 僵尸症：项目 ENABLE 但消耗永远是 0</a>
+    <a href="juliang-sucai-lingjihuo.html">→ 黑洞症：零激活素材吃掉了 40% 预算</a>
+    <a href="juliang-jihuo-lv-di.html">→ 漏桶症：点击率正常，激活率只有 2%</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营的微信小程序广告账户，经巨量引擎官方 Marketing API 取数，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业与量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

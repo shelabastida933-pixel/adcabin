@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎 ROI 全是 0？先别怪投放，可能是回传没通｜投流舱</title>
+<meta name="description" content="近 14 天投放数据里所有小程序 ROI 指标全为 0。这不是投放没效果，而是付费回传链路没通——用户付费了但没回传，模型学不到谁会付费，量自然起不来。附回传链路自查方法与字段名。">
+<meta name="keywords" content="巨量引擎ROI为0,广告回传没数据,小程序付费回传,巨量引擎转化归因,attribution_micro_game_roi,巨量引擎回传配置,广告数据回传">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-roi-wei-0.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="ROI 全是 0？先查回传链路，别急着改投放">
+<meta property="og:description" content="用户付费了但没回传，模型学不到谁会付费——这是链路问题，不是投放问题。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-roi-wei-0.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "所有 ROI 指标都是 0：这是数据链路问题，不是投放问题",
+      "description": "近 14 天投放数据里所有小程序 ROI 指标全为 0。这不是投放没效果，而是付费回传链路没通——用户付费了但没回传，模型学不到谁会付费，量自然起不来。附回传链路自查方法与字段名。",
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-roi-wei-0.html"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "断链症：回传链路"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎所有 ROI 指标都是 0，是什么原因？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ROI 精确为 0 通常是数据链路问题而非投放问题。可能是付费回传没打通（用户付费了但事件没回传），也可能是拉取的指标名不对——小程序类落地页的归因指标带 attribution_ 前缀，如 attribution_micro_game_0d_roi。建议先确认服务端有没有收到来自巨量的回传请求。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么确认广告转化回传是否正常？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "四个检查点：一看指标名是否正确（小程序类用 attribution_ 系列）；二看优化目标与回传事件是否匹配；三看回传 URL 里的宏参数（promotionid、ip、callback、event_type）是否被服务端正确替换，未替换会回传字面量；四看自己的监测服务器日志里有没有收到回传请求。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "回传没问题但量还是起不来怎么办？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "如果确认回传正常，那要检查数据量是否足够。日消耗很低时（例如几十元）、激活数只有个位数，模型缺乏统计显著性，学习本身就慢。这时问题不是优化技巧，而是量级——需要先解决预算与出价竞争力问题。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/article.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#symptoms">6 种病征</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">¥199 账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 断链症：回传链路
+</div>
+
+<article>
+  <h1>所有 ROI 指标都是 0：这是数据链路问题，不是投放问题</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>9 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">拉出来的日报里，<strong>所有小程序 ROI 指标都是 0</strong>。第一反应是「投放效果太差」。但仔细看完数据后发现：<strong>问题根本不在投放端——是付费回传链路没有打通。</strong></div>
+
+  <h2 id="signal">为什么「ROI 全 0」是个重要信号</h2>
+
+  <p>先想清楚一件事：ROI 为 0 和 ROI 很低，是两种完全不同的情况。</p>
+
+  <table>
+    <tr><th>情况</th><th>含义</th><th>该查什么</th></tr>
+    <tr><td>ROI 很低（比如 0.3）</td><td>投放效率问题</td><td>出价、定向、素材</td></tr>
+    <tr><td><b>ROI 精确为 0</b></td><td><b>要么没有付费用户，要么数据没回传</b></td><td><b>先查回传链路</b></td></tr>
+  </table>
+
+  <p>如果账户有激活、有消耗，但 ROI 精确为 0，<strong>更大的概率是数据链路问题</strong>——用户付费了，但这个「付费」事件没有回传给广告平台。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v red">0</div><div class="l">所有 ROI 指标值</div><div class="x">小程序 ROI 系列全为 0</div></div>
+    <div class="stat"><div class="v amber">9</div><div class="l">近 14 天激活数</div><div class="x">有转化，不是没人用</div></div>
+    <div class="stat"><div class="v blue">444</div><div class="l">近 14 天点击数</div><div class="x">有流量，链路前端是通的</div></div>
+    <div class="stat"><div class="v amber">¥19.67</div><div class="l">激活成本</div><div class="x">说明投放本身在工作</div></div>
+  </div>
+
+  <h2 id="chain">回传断了会发生什么（连锁反应）</h2>
+
+  <p>这不是「数据不好看」的问题，它会真实地影响投放效果：</p>
+
+  <ol>
+    <li><b>模型学不到「谁会付费」</b>：巨量的自动投放依赖转化数据来学习人群。收不到付费回传，模型只能按「激活」优化，而激活的人未必会付费。</li>
+    <li><b>出价失去依据</b>：你无法用付费价值来指导出价，只能按激活成本出价，很容易出高。</li>
+    <li><b>量级起不来</b>：转化数据稀疏 → 模型学习慢 → 不敢放量 → 消耗上不去。这解释了「有钱花不出去」。</li>
+    <li><b>所有优化动作都失去判断标准</b>：你到底该提价还是降价、该收窄还是放开，都没有依据。</li>
+  </ol>
+
+  <div class="box key">
+    <span class="t">一句话总结</span>
+    回传断了，你不是在「优化投放」，你是在<b>盲投</b>。
+    这时候任何基于 ROI 的决策都是错的——因为分子是 0。
+  </div>
+
+  <h2 id="howto">怎么确认回传是通的（四步）</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>看指标名对不对</h4><p>小程序类落地页有一套专门的归因指标，命名带 <code>attribution_</code> 前缀，比如：<code>attribution_micro_game_0d_roi</code>、<code>attribution_micro_game_7d_roi</code>。如果你拉的是普通 ROI 字段，可能压根拿不到数据。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>确认「优化目标」与回传事件是否匹配</h4><p>如果优化目标是「激活」，但你想看付费 ROI，那就需要确认付费事件确实被回传了——两者是不同的事件。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>检查回传 URL 的占位符是否被正确替换</h4><p>巨量的回传 URL 里有多个宏参数需要被替换成实际值：</p></div></div>
+
+  <pre><code>https://你的监测域名/callback
+  ?promotionid=__PROMOTION_ID__
+  &amp;ip=__IP__
+  &amp;callback=__CALLBACK__
+  &amp;event_type=__EVENT_TYPE__
+
+# 如果服务端没做替换，回传的就是字面量，等于废数据</code></pre>
+
+  <div class="step"><div class="n">4</div><div class="c"><h4>看服务端有没有收到回传请求</h4><p>登录你自己的监测服务器，看访问日志里有没有来自巨量的回传请求。这一条最直接——<strong>有请求说明链路通，没请求说明链路断</strong>。</p></div></div>
+
+  <h2 id="mistake">一个我犯过的判断错误（值得记下来）</h2>
+
+  <p>看到 ROI 全 0 之后，我的第一个结论是：「回传事件和优化目标不匹配 → 模型学不会 → 所以量起不来」。听起来很有道理。</p>
+
+  <p><strong>但复查数据后发现这个结论是错的——回传口径其实是对的。</strong>真正的原因是：<strong>预算池本身很小</strong>，已有的数据量不足以支撑模型学习。</p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 这个教训很值钱</span>
+    「数据异常」的归因有多个可能，<b>先验证再下结论</b>。
+    反直觉的是：回传没问题时，「量起不来」的原因可能只是<b>数据量太小</b>。
+    小预算下，模型的统计显著性本来就不足——这不是 bug，是数学。
+  </div>
+
+  <h2 id="order">所以正确的顺序是</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>先确认回传链路（上面的四步）</h4><p>这一步花十分钟，但能排除掉最大的可能性。链路不通的话，后面做什么都是盲投。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>再确认数据量是否足够</h4><p>如果日消耗只有几十块、激活只有个位数，那数据量本身就不足以让模型学习。这时候的问题不是「优化」，而是「量级」。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>然后才轮到优化投放</h4><p>链路通了、数据量够了，再看出价、定向、素材——这时你的优化才有依据。</p></div></div>
+
+  <div class="cta">
+    <h3>想确认你的回传链路通不通？</h3>
+    <p>我可以帮你核对指标名、回传 URL 的宏参数替换情况，并从数据形态判断「ROI 为 0」到底是链路问题还是量级问题。¥199，可全额抵扣后续服务费。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码做 ¥199 账户诊断</a>
+      <a href="../#symptoms" class="btn btn-ghost">看 6 种病征自测</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-jihuo-lv-di.html">→ 漏桶症：点击率正常，激活率只有 2%</a>
+    <a href="juliang-rihao-shangbuqu.html">→ 空转症：日耗上不去，78% 的账户在空转</a>
+    <a href="juliang-sucai-lingjihuo.html">→ 黑洞症：零激活素材吃掉了 40% 预算</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营的微信小程序广告账户，经巨量引擎官方 Marketing API 取数，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业与量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

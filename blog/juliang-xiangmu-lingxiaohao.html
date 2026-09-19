@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎项目不消耗：40 个项目里 35 个是空壳｜投流舱</title>
+<meta name="description" content="巨量引擎是「项目 → 单元 → 素材」三层结构，只建了项目没建单元就没有可投放实体。我那个账户 40 个项目里 35 个是废弃空壳，项目状态显示 ENABLE 却永不消耗。附排查方法与批量清理顺序。">
+<meta name="keywords" content="巨量引擎项目不消耗,巨量引擎计划零消耗,建了项目没消耗,巨量引擎投放单元,巨量引擎计划不跑,巨量广告零消耗">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-xiangmu-lingxiaohao.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="项目 ENABLE 但消耗永远是 0？查有没有单元">
+<meta property="og:description" content="巨量是三层结构，缺一层就投不出去。40 个项目里 35 个是空壳。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-xiangmu-lingxiaohao.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "项目状态正常但消耗永远是 0？查一下有没有单元",
+      "description": "巨量引擎是「项目 → 单元 → 素材」三层结构，只建了项目没建单元就没有可投放实体。我那个账户 40 个项目里 35 个是废弃空壳，项目状态显示 ENABLE 却永不消耗。附排查方法与批量清理顺序。",
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-xiangmu-lingxiaohao.html"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "僵尸症：空壳项目"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎项目状态正常但消耗为 0 是什么原因？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "最常见的原因是只建了项目没建单元。巨量引擎是「项目 → 单元 → 素材」三层结构，没有单元就没有可投放实体。项目状态会显示 ENABLE，看起来正常，但消耗永远是 0。建议到单元列表核对单元数是否与项目数匹配。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么快速排查账户里有多少空壳项目？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "直接在单元列表看单元总数，与项目数对比，差额通常就是空壳。也可以把项目按消耗排序，排除新建项目后，长期为 0 的基本都是这个问题。注意新项目在学习期内消耗为 0 属正常。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "空壳项目应该删掉还是补齐？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "分情况。如果项目本身配置合理（定向、出价、关键词都没问题），只是缺单元，补齐单元比删掉更有价值；如果是早期测试留下的废弃项目，直接清理。清理建议分批进行，先补有潜力的、再删纯废弃的。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/article.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#symptoms">6 种病征</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">¥199 账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 僵尸症：空壳项目
+</div>
+
+<article>
+  <h1>项目状态正常但消耗永远是 0？查一下有没有单元</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>7 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">这是我踩过的最隐蔽的一个坑。项目建好了，状态显示正常，后台里看着和能跑的计划一模一样——<strong>但消耗永远是 0</strong>。查了很久才发现：<strong>我只建了项目，没建单元。</strong></div>
+
+  <h2 id="structure">巨量引擎的三层结构</h2>
+
+  <p>把这件事说清楚只需要一张图：</p>
+
+  <pre><code>项目（campaign）      ← 决定目标、预算、投放模式
+  └─ 单元（unit）     ← 决定定向、出价、素材
+       └─ 素材        ← 视频 / 图文 / 标题
+
+只建到项目层 = 没有可投放实体 = 消耗永远为 0</code></pre>
+
+  <div class="box warn">
+    <span class="t">⚠️ 状态字段会误导你</span>
+    项目状态显示 <code>ENABLE</code>（已启用），这是真的——它确实启用了。
+    但没有单元，系统就没有东西可以投出去。
+    <b>「启用」不等于「在跑」。</b>这是最容易误判的地方。
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v red">35</div><div class="l">废弃空壳项目数</div><div class="x">单个账户共 40 个项目</div></div>
+    <div class="stat"><div class="v red">87%</div><div class="l">空壳占比</div><div class="x">大部分精力被无效项目占用</div></div>
+    <div class="stat"><div class="v amber">5</div><div class="l">真实在投项目数</div><div class="x">40 个项目里只有这些在跑</div></div>
+    <div class="stat"><div class="v red">0</div><div class="l">空壳项目的消耗</div><div class="x">看起来正常，实际从不花钱</div></div>
+  </div>
+
+  <h2 id="cause">为什么会有这么多空壳</h2>
+
+  <ol>
+    <li><b>批量建立计划时只建了一层</b>：我在做批量建计划时，把「项目 → 单元 → 素材」的流程做成了两次调用，但第一次调用失败后没有正确中断，于是留下了一批只有项目的半成品。</li>
+    <li><b>复制计划时只复制了项目</b>：复制是常用操作，但如果只复制到项目层，新项目同样没有单元。</li>
+    <li><b>废弃测试计划没清理</b>：早期测试留下的项目没删，时间久了就堆积成一片空壳。</li>
+  </ol>
+
+  <h2 id="howto">怎么排查（三步）</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>数单元，不数项目</h4><p>在 <span class="path">竞价投放 → 搜索 → 单元</span> 里看单元总数。如果单元数远少于项目数，差额就是空壳。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>按消耗排序</h4><p>把项目按消耗排序，长期为 0 的一律标记为可疑。注意：新项目短期内为 0 是正常的（还在学习期），要看创建时间。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>逐个确认项目下有没有单元</h4><p>点进可疑项目看它的单元列表。空的话就是这个问题。</p></div></div>
+
+  <h2 id="cleanup">清理顺序建议</h2>
+
+  <p>确认了有空壳之后，别急着一次全删。我用的是这个顺序：</p>
+
+  <ul>
+    <li><b>先补齐有潜力的项目</b>：如果某个项目本身配置合理（定向、出价都没问题），只是缺单元，那就补上单元而不是删掉。</li>
+    <li><b>再删纯废弃项目</b>：早期测试留下的、配置已经过时的，直接清理。</li>
+    <li><b>最后建检查机制</b>：把「项目下是否有单元」加进日常检查项，避免再堆积。</li>
+  </ul>
+
+  <div class="box">
+    <span class="t">为什么空壳项目有害，不只是「占地方」</span>
+    它们会污染你的判断：你以为在投 40 个计划，实际只有 5 个在跑。
+    基于错误的前提做决策，方向必然错。
+    我第一次诊断自己账户时就得出了「账户规模不小」的错误结论。
+  </div>
+
+  <h2 id="macro">顺带一个更宏观的发现</h2>
+
+  <p>把这个坑放大到账户层，我看到的是：<strong>41 个授权账户里 32 个零消耗</strong>——占比 78%。其中相当一部分就是这个原因。</p>
+
+  <p>所以当有人问「为什么余额充足却跑不出量」时，<strong>我的第一个建议永远是：先数单元，别数项目。</strong></p>
+
+  <div class="cta">
+    <h3>想知道你的账户里有多少空壳？</h3>
+    <p>我可以把你全部授权账户拉成一张表，逐个项目核对有没有单元，区分出「真在投 / 缺单元可救 / 纯废弃」，并给出清理顺序。¥199，可全额抵扣后续服务费。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码做 ¥199 账户诊断</a>
+      <a href="../#symptoms" class="btn btn-ghost">看 6 种病征自测</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-rihao-shangbuqu.html">→ 空转症：日耗上不去，78% 的账户在空转</a>
+    <a href="juliang-sucai-lingjihuo.html">→ 黑洞症：零激活素材吃掉了 40% 预算</a>
+    <a href="juliang-renqun-cuoqei.html">→ 错位症：一个年龄段占 24% 消耗、0 转化</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营的微信小程序广告账户，经巨量引擎官方 Marketing API 取数，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业与量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

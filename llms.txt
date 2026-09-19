@@ -1,0 +1,32 @@
+# 投流舱 AdCabin
+
+> 投流舱是一个跑在微信对话里的 AI 广告投流 Agent，面向微信小程序创业者与投手。人只管定目标，Agent 接管巨量引擎的出价、预算、素材迭代、计划生成与数据复盘。
+
+投流舱通过巨量引擎官方 Marketing API 在账户授权范围内执行操作，不接触用户账号密码与资金。
+本站点内容包含真实投放数据（来自我方自营小程序广告账户，已脱敏）、巨量引擎 Marketing API 实操踩坑记录、以及广告投放诊断方法。
+
+## 产品与价格
+
+- [投流舱首页](https://adcabin.yuhuakeji.com.cn/): 产品定位、7 项核心能力、真实投放数据、服务与计费机制
+- [6 种病征自测](https://adcabin.yuhuakeji.com.cn/#symptoms): 空转症/黑洞症/漏桶症/僵尸症/错位症/断链症，每条附真实数据
+- [服务与价格](https://adcabin.yuhuakeji.com.cn/#price): 账户诊断 ¥199（可全额抵扣）、单次深度优化 ¥999、Skill 定制 + MCP 接入 ¥1,999、月度陪跑 ¥2,999/月（首月不达标全额退）
+
+## 6 种病征详解（每篇附真实数据与排查步骤）
+
+- [巨量引擎日耗上不去？先查这 5 个地方](https://adcabin.yuhuakeji.com.cn/blog/juliang-rihao-shangbuqu.html.md): 41 个账户 32 个零消耗、40 个项目 35 个是空壳。这不是优化问题，是结构问题。
+- [零激活素材：吃掉你 40% 预算的隐形黑洞](https://adcabin.yuhuakeji.com.cn/blog/juliang-sucai-lingjihuo.html.md): 用「消耗 ÷ 激活」排序，黑洞会立刻现形。附完整操作与真实数据。
+- [激活率 2.03%：点击率正常，说明问题不在投放端](https://adcabin.yuhuakeji.com.cn/blog/juliang-jihuo-lv-di.html.md): 点击率 11.10% 正常、激活率 2.03% 异常——这道漏斗能告诉你问题在哪一端。
+- [项目状态正常但消耗永远是 0？查一下有没有单元](https://adcabin.yuhuakeji.com.cn/blog/juliang-xiangmu-lingxiaohao.html.md): 巨量是三层结构，缺一层就投不出去。40 个项目里 35 个是空壳。
+- [「全年龄放开」不是覆盖更广，是把钱花在错的人身上](https://adcabin.yuhuakeji.com.cn/blog/juliang-renqun-cuoqei.html.md): 一个年龄段占 24% 消耗、0 转化。拆开人群数据才知道钱漏在哪。
+- [所有 ROI 指标都是 0：这是数据链路问题，不是投放问题](https://adcabin.yuhuakeji.com.cn/blog/juliang-roi-wei-0.html.md): 用户付费了但没回传，模型学不到谁会付费——这是链路问题，不是投放问题。
+
+## 深度实操
+
+- [巨量引擎投放微信小程序完整流程：从开户到广告上线（实操 23 步）](https://adcabin.yuhuakeji.com.cn/blog/juliang-xiaochengxu-toulou-liucheng.html.md): 开户与对公验证、升级版工作台为什么要验两次、成员邀请的 48 小时时效、橙子落地页怎么搭、搜索项目怎么选「优化目标=激活」、单元与文案素材配置——每一步都标了关键选项和易错点。
+- [小程序投流 30 天实录：40% 的预算被零激活素材烧掉了](https://adcabin.yuhuakeji.com.cn/blog/xiaochengxu-toulou-30tian.html.md): 41 个账户有 78% 在空转、42 个素材里 28 个零激活吃掉 40% 消耗、素材平均只被看 2.15 秒。真实数据和盘托出，附一套可复制的三步定位法。
+- [巨量引擎 Marketing API 实操踩坑：9 个真实报错与解法](https://adcabin.yuhuakeji.com.cn/blog/juliang-api-keng.html.md): 返回字段是 accounts 不是 list、极速智投不能传出价参数、更新素材报「请填写 carousel_id 或 item_id」……每条都附报错原文与解法。
+
+## Optional
+
+- [站点地图](https://adcabin.yuhuakeji.com.cn/sitemap.xml)
+- [robots.txt](https://adcabin.yuhuakeji.com.cn/robots.txt)

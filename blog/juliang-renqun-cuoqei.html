@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>巨量引擎定向优化：一个年龄段占 24% 消耗、0 转化｜投流舱</title>
+<meta name="description" content="41–50 岁人群占了我 24% 的消耗、贡献 0 个转化；50 岁以上激活率 2.81%、成本 ¥12.12，明显优于账户均值 ¥19.67。这篇讲怎么拆人群数据找出错配，以及为什么「全年龄放开」是陷阱。">
+<meta name="keywords" content="巨量引擎定向优化,广告人群不精准,全年龄投放,巨量引擎人群定向,广告投放人群错配,巨量引擎年龄定向,广告受众优化">
+<meta name="author" content="投流舱 AdCabin">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://adcabin.yuhuakeji.com.cn/blog/juliang-renqun-cuoqei.html">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="投流舱 AdCabin">
+<meta property="og:title" content="「全年龄放开」是把钱花在错的人身上">
+<meta property="og:description" content="一个年龄段占 24% 消耗、0 转化。拆开人群数据才知道钱漏在哪。">
+<meta property="og:url" content="https://adcabin.yuhuakeji.com.cn/blog/juliang-renqun-cuoqei.html">
+<meta property="og:image" content="https://adcabin.yuhuakeji.com.cn/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1A">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "「全年龄放开」不是覆盖更广，是把钱花在错的人身上",
+      "description": "41–50 岁人群占了我 24% 的消耗、贡献 0 个转化；50 岁以上激活率 2.81%、成本 ¥12.12，明显优于账户均值 ¥19.67。这篇讲怎么拆人群数据找出错配，以及为什么「全年龄放开」是陷阱。",
+      "author": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "投流舱 AdCabin",
+        "url": "https://adcabin.yuhuakeji.com.cn/"
+      },
+      "datePublished": "2026-09-18",
+      "dateModified": "2026-09-18",
+      "inLanguage": "zh-CN",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://adcabin.yuhuakeji.com.cn/blog/juliang-renqun-cuoqei.html"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "首页",
+          "item": "https://adcabin.yuhuakeji.com.cn/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "实战笔记",
+          "item": "https://adcabin.yuhuakeji.com.cn/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "错位症：人群错配"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "巨量引擎定向选「不限」是不是覆盖更广？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "覆盖范围确实更广，但预算分配是按竞价效率而非你的意愿。系统会把钱优先给「容易买到」的人群，而这批人常常是转化意愿最低的，因为竞争少往往是有原因的。建议拉出年龄、性别等维度数据，按激活成本而非消耗占比来判断人群质量。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么找出广告投放里被浪费的人群？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "在报表里加入年龄等维度，拉近 30 天数据，算每个维度的激活成本。重点看两类：一是消耗占比高但激活数为 0 的（纯浪费，可直接排除）；二是消耗不高但激活成本极低的（应加量）。注意 14 天样本可能偏小。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "收窄定向会不会导致量级下降？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "会，而且收得太窄有触发系统重新学习的风险。推荐两步走：先把零转化人群排除（零风险），再小幅收窄到最优人群，并保留部分原定向做 A/B 对照，给足 3 天以上观察期再决定是否进一步收紧。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/article.css">
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="wrap">
+
+<nav>
+  <div class="nav-in">
+    <a href="../" class="logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+          <stop stop-color="#7EA6FF"/><stop offset=".55" stop-color="#4A7DFF"/><stop offset="1" stop-color="#A78BFA"/>
+        </linearGradient></defs>
+        <rect x="1.5" y="1.5" width="29" height="29" rx="9" stroke="url(#lg)" stroke-width="2"/>
+        <path d="M8 21.5 13 11l3.4 6.4L19 13.5l5 8" stroke="url(#lg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23.6" cy="9.4" r="2.1" fill="#22D3EE"/>
+      </svg>
+      投流舱
+    </a>
+    <div class="nav-links">
+      <a href="../">首页</a>
+      <a href="./" class="on">实战笔记</a>
+      <a href="../#symptoms">6 种病征</a>
+      <a href="../#price">价格</a>
+    </div>
+    <a href="../#cta" class="btn btn-primary">¥199 账户诊断</a>
+  </div>
+</nav>
+
+<div class="crumb">
+  <a href="../">首页</a> › <a href="./">实战笔记</a> › 错位症：人群错配
+</div>
+
+<article>
+  <h1>「全年龄放开」不是覆盖更广，是把钱花在错的人身上</h1>
+
+  <div class="meta">
+    <span>作者：<b>投流舱 AdCabin</b></span>
+    <span>2026-09-18</span>
+    <span>阅读约 <b>8 分钟</b></span>
+    <span>数据来源：<b>我方自营小程序广告账户</b></span>
+  </div>
+
+  <div class="lede">「覆盖更广」听起来总是好事，所以很多人（包括我）在定向那一栏直接选「不限」。<strong>但「不限」的真实含义不是「覆盖更广」，而是「把钱同时花在对的人和错的人身上」。</strong>而错的那部分，通常贵得多。</div>
+
+  <h2 id="gap">拆开一看，差别是量级性的</h2>
+
+  <p>我的原始定向是全年龄放开。把近 30 天数据按年龄拆开之后，看到的分布让我很意外：</p>
+
+  <table>
+    <tr><th>年龄段</th><th>消耗占比</th><th>激活数</th><th>激活率</th><th>判断</th></tr>
+    <tr><td>50 岁以上</td><td>—</td><td>多</td><td><b>2.81%</b></td><td><b>最优，应加量</b></td></tr>
+    <tr><td>41–50 岁</td><td><b>24%</b></td><td><b>0</b></td><td>0%</td><td><b>纯浪费</b></td></tr>
+    <tr><td>更年轻的段</td><td>—</td><td>少</td><td>偏低</td><td>观察</td></tr>
+  </table>
+
+  <div class="stats">
+    <div class="stat"><div class="v red">24%</div><div class="l">41–50 岁消耗占比</div><div class="x">贡献 0 个转化</div></div>
+    <div class="stat"><div class="v green">2.81%</div><div class="l">50 岁以上激活率</div><div class="x">近 30 天真实数据</div></div>
+    <div class="stat"><div class="v green">¥12.12</div><div class="l">50 岁以上激活成本</div><div class="x">优于账户均值</div></div>
+    <div class="stat"><div class="v amber">¥19.67</div><div class="l">账户平均激活成本</div><div class="x">被错配人群拖累</div></div>
+  </div>
+
+  <p>同一个账户、同一批素材、同样的出价——<strong>只是年龄段不同，激活成本差了将近一半。</strong>这就是「人群错配」的代价。</p>
+
+  <h2 id="why">为什么会发生：平台按你的出价分配，不按你的意愿</h2>
+
+  <p>这是很多人理解错的地方。当你选「不限」时，系统不会平均分配预算给所有人群，而是<strong>按竞价效率分配</strong>——谁更容易被你的出价买到，就多给谁。</p>
+
+  <p>而「容易买到」的人群，往往<strong>正是转化意愿最低的那批</strong>。他们便宜是因为没人抢，没人抢是因为投放者发现他们不转化。</p>
+
+  <div class="box warn">
+    <span class="t">⚠️ 一个容易忽略的推论</span>
+    「便宜的人群」通常意味着「低竞争」，而低竞争常常有原因。
+    反过来，某个年龄段贵，也可能是因为它确实值钱。
+    <b>不要只看成本高低，要看成本与转化的比值。</b>
+  </div>
+
+  <h2 id="howto">怎么拆：三步拿到人群真实表现</h2>
+
+  <div class="step"><div class="n">1</div><div class="c"><h4>拉年龄维度数据</h4><p>在巨量后台的报表里把「年龄」加进维度，拉出各年龄段的消耗、激活、激活成本。时间范围建议近 30 天——14 天样本可能不够。</p></div></div>
+
+  <div class="step"><div class="n">2</div><div class="c"><h4>算每个年龄段的激活成本，不只是消耗占比</h4><p>消耗占比高但激活为 0 的，就是纯浪费；消耗不高但激活成本极低的，是应该加量的。</p></div></div>
+
+  <div class="step"><div class="n">3</div><div class="c"><h4>做排除，而不是只做收窄</h4><p>把 0 转化的人群主动排除，比「只投最优人群」更安全——后者可能让量级骤降。</p></div></div>
+
+  <h2 id="fix">修正方案：两步走</h2>
+
+  <h3>第一步：排除纯浪费的人群</h3>
+
+  <p>把「消耗占比高 + 激活数为 0」的人群直接排除。这一步通常是零风险的——你在排掉本来就 0 转化的花销。</p>
+
+  <h3>第二步：小幅收窄到最优人群</h3>
+
+  <p>把主要预算集中到表现最好的年龄段，但<strong>不要一次收得太窄</strong>——收得太窄会让量级骤降，而且可能触发系统重新学习。</p>
+
+  <div class="box key">
+    <span class="t">推荐做法：做 A/B 对照实验</span>
+    新建一个计划，除年龄定向外其他配置完全相同（同素材、同出价、同关键词）。
+    让两个计划并行跑 3 天，比较激活率和激活成本。
+    <b>这才是「干净的对照」</b>——你能确定差异确实来自定向，而不是别的东西。
+    顺便说：我做过这个实验，量级一开始很小，需要给足观察期（3 天以上）才能下结论。
+  </div>
+
+  <h2 id="trap">一个容易踩的技术坑</h2>
+
+  <p>改定向之前，先确认目标计划的定向字段当前是什么状态。有些计划的年龄字段是 <code>null</code>（不限），兴趣行为是 <code>UNLIMITED</code>——这意味着它并非「设置了全年龄」，而是「压根没设」。</p>
+
+  <pre><code>age = null                    → 不限年龄
+interest_action_mode = UNLIMITED → 不限兴趣</code></pre>
+
+  <p>这两种状态在接口层的处理方式不同。<strong>改之前先把当前配置读出来</strong>，否则容易改错层级（定向可能挂在项目层，也可能挂在单元层）。</p>
+
+  <div class="cta">
+    <h3>想知道你的人群里有多少是纯浪费？</h3>
+    <p>我可以把你的数据按年龄、性别等维度拆开，标出「消耗高但零转化」的人群，并设计一个干净的 A/B 对照实验来验证收窄后的效果。¥199，可全额抵扣后续服务费。</p>
+    <div class="row">
+      <a href="../#cta" class="btn btn-primary">扫码做 ¥199 账户诊断</a>
+      <a href="../#symptoms" class="btn btn-ghost">看 6 种病征自测</a>
+    </div>
+  </div>
+
+  <div class="related">
+    <h3>相关阅读</h3>
+    <a href="juliang-jihuo-lv-di.html">→ 漏桶症：点击率正常，激活率只有 2%</a>
+    <a href="juliang-rihao-shangbuqu.html">→ 空转症：日耗上不去，78% 的账户在空转</a>
+    <a href="juliang-roi-wei-0.html">→ 断链症：ROI 全是 0，不一定是投放没效果</a>
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <div>投流舱 AdCabin · 你只管定目标，舱长负责跑量</div>
+    <div><a href="https://adcabin.yuhuakeji.com.cn/">adcabin.yuhuakeji.com.cn</a></div>
+  </div>
+  <p class="foot-note">
+    数据说明：本文所有投放数据均来自我方自营的微信小程序广告账户，经巨量引擎官方 Marketing API 取数，
+    已对账户名称、账户 ID、主体信息与精确金额做脱敏处理。不同行业与量级的投放表现差异巨大，
+    本文数据不构成对任何效果提升的承诺。
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

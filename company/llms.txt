@@ -1,0 +1,29 @@
+# 宇华科技 Yuhua Tech
+
+> 宇华科技是一家全球化的人工智能高科技公司，专注 AI 即服务赛道，为消费者提供 AI 情绪与陪伴服务，核心理念是 E-OS（情感操作系统）。
+
+公司产品矩阵覆盖语音情绪日记与实时陪伴、基于家庭数据的自动传记电影生成，以及面向企业的 AI 解决方案。
+
+## 公司与产品
+
+- [宇华科技首页](https://yuhuakeji.com.cn/): 公司愿景、产品矩阵、EmoCore™ 情感智能引擎
+- [产品矩阵](https://yuhuakeji.com.cn/#products): Yuhua Echo（语音情绪日记）、Yuhua Capsule（自动传记电影）
+- [技术架构](https://yuhuakeji.com.cn/#technology): 多模态感知层、情感知识图谱、隐私优先架构
+- [宇华·回响 Demo](https://yuhuakeji.com.cn/demo.html): EmoCore 交互演示（JavaScript 渲染，无静态正文）
+- [情感 AI 产品页](https://yuhuakeji.com.cn/Aipic.html): 情感 AI，点亮生命每一刻
+- [企业级 AI 解决方案](https://yuhuakeji.com.cn/yuhuatob.html): 面向企业的 AI 服务
+- [品牌落地页](https://yuhuakeji.com.cn/yuhua_landing.html): 让重要的情感时刻永远真实
+
+
+## 纯 Markdown 版本（供 AI 直接读取）
+
+- [index.html.md](https://yuhuakeji.com.cn/index.html.md): 宇华科技首页全文（公司愿景、产品矩阵、EmoCore™ 技术架构）
+- [Aipic.html.md](https://yuhuakeji.com.cn/Aipic.html.md): 情感 AI 产品页：点亮生命每一刻
+- [yuhuatob.html.md](https://yuhuakeji.com.cn/yuhuatob.html.md): 企业级 AI 解决方案
+- [yuhua_landing.html.md](https://yuhuakeji.com.cn/yuhua_landing.html.md): 宇华科技品牌落地页：让重要的情感时刻永远真实
+- [demo.html.md](https://yuhuakeji.com.cn/demo.html.md): 交互演示页的文字说明（该页为 JavaScript 渲染，本文件补充说明其内容）
+
+## Optional
+
+- [站点地图](https://yuhuakeji.com.cn/sitemap.xml)
+- [robots.txt](https://yuhuakeji.com.cn/robots.txt)
