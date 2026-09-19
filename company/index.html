@@ -52,6 +52,31 @@
             background: radial-gradient(circle at 50% 50%, rgba(254, 114, 105, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
         }
     </style>
+
+    <!-- 结构化数据：首页此前完全没有 JSON-LD（线上体检 verify_live_seo.py 查出来的）。
+         只写页面上真实存在的事实，不编造成立时间、地址、融资等未知信息。 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "宇华科技 Yuhua Tech",
+          "alternateName": "Yuhua Tech",
+          "url": "https://yuhuakeji.com.cn/",
+          "description": "全球化的人工智能高科技公司，专注 AI 即服务赛道，为消费者提供 AI 情绪与陪伴服务，核心理念是 E-OS（情感操作系统）。",
+          "logo": "https://yuhuakeji.com.cn/assets/og.png"
+        },
+        {
+          "@type": "WebSite",
+          "name": "宇华科技 Yuhua Tech",
+          "url": "https://yuhuakeji.com.cn/",
+          "inLanguage": "zh-CN",
+          "publisher": { "@type": "Organization", "name": "宇华科技 Yuhua Tech" }
+        }
+      ]
+    }
+    </script>
 </head>
 <body class="bg-slate-900 text-slate-50 antialiased selection:bg-orange-500 selection:text-white">
 
