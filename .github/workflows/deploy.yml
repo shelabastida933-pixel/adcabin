@@ -469,9 +469,15 @@ jobs:
           ADC_URLS=""
           add_adc() { ADC_URLS="${ADC_URLS}${ADC_URLS:+$'\n'}$1"; }
 
+          # ⚠️ 必须用 if 而不是 `grep -q ... && add_adc ...`：
+          #    GitHub Actions 是 `bash -e`。在【函数内部】，最后一条命令返回 1
+          #    会让整个函数返回 1，`bash -e` 随即终止整个步骤 —— 2026-09-19 那次
+          #    「本次没有 HTML 改动」的情况下步骤直接 exit 1（部署其实是成功的）。
+          #    `A && B` 写在顶层不受 -e 影响，但搬进函数就受，这是搬进函数时踩的坑。
           adc_maybe() {          # $1 = sitemap URL, $2 = 仓库内对应文件
-            if [ "$MANUAL" = "yes" ]; then add_adc "$1"; return; fi
-            echo "$CHANGED" | grep -qxF "$2" && add_adc "$1"
+            if [ "$MANUAL" = "yes" ]; then add_adc "$1"; return 0; fi
+            if echo "$CHANGED" | grep -qxF "$2"; then add_adc "$1"; fi
+            return 0
           }
 
           if [ -f sitemap.xml ]; then
