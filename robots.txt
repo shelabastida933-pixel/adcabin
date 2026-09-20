@@ -24,4 +24,58 @@ Allow: /
 User-agent: Bytespider
 Allow: /
 
+User-agent: YisouSpider
+Allow: /
+
+User-agent: 360Spider
+Allow: /
+
+# ---------- AI 爬虫：显式放行 ----------
+# 这些 UA 靠上面的 `User-agent: *` 本来就是放行的（线上体检可确认），显式写出来的理由：
+#   1. 抗未来改动 —— 万一以后通配规则被收紧，这些条目能保住；显式比隐式稳。
+#   2. 明确表达「欢迎抓取」，而不是「没被禁止」。
+#
+# ⚠️ 但要清楚代价与收益不对等：目标用户在中国大陆，
+# GPTBot / ClaudeBot / PerplexityBot / CCBot 对应的产品他们**基本访问不到**。
+# 所以这些条目的价值是「成本几乎为零、顺手保留」——不值得为它们做任何额外优化
+# （专门调英文格式、做英文内容之类）。真正该投入的是百度与微信生态那几条。
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
 Sitemap: https://adcabin.yuhuakeji.com.cn/sitemap.xml

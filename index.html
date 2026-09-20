@@ -258,6 +258,9 @@ h2{font-size:clamp(26px,3.4vw,40px);line-height:1.24;letter-spacing:-.9px;font-w
 }
 .cap h3{font-size:16px;margin-bottom:9px;font-weight:700}
 .cap p{color:var(--muted);font-size:14.2px}
+/* 能力卡片里的实测数字：给 AI 引用时这些是「可引用的具体事实」，
+   对人也同样更可信，所以让它比正文亮一档 */
+.cap p b{color:#C9D6F5;font-weight:700}
 
 /* ---------- 诊断数据 ---------- */
 .case{
@@ -825,7 +828,7 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
       <div class="pain reveal">
         <span class="ic">🕳️</span>
         <h3>预算在无声地漏掉</h3>
-        <p>素材挂着一个月没换、计划建了项目没建单元、定向覆盖一堆不会付费的人——这些坑不会报错，只会安静地把钱花完。</p>
+        <p>素材挂着一个月没换、计划建了项目没建单元、定向覆盖一堆不会付费的人——这些坑不会报错，只会安静地把钱花完。我们自己的账户里，<b>40% 的预算</b>就是这样被 28 个零激活素材吃掉的。</p>
       </div>
       <div class="pain reveal">
         <span class="ic">🧾</span>
@@ -933,16 +936,16 @@ footer{border-top:1px solid var(--line2);padding:44px 0 56px;margin-top:24px}
     <div class="reveal">
       <div class="eyebrow">核心能力</div>
       <h2>七件事，舱长全包了</h2>
-      <p class="sub">从建计划到出日报，从调出价到换素材——这些过去要一个投手团队做的事，现在都在一个微信对话里完成。</p>
+      <p class="sub">从建计划到出日报，从调出价到换素材——这些过去要一个投手团队做的事，现在都在一个微信对话里完成。下面是每一件事在真实账户里的样子，数字都来自我们自己那 41 个授权账户。</p>
     </div>
     <div class="caps">
-      <div class="cap reveal"><div class="n">01</div><h3>自动出价与预算调整</h3><p>分钟级盯住每个计划的成本曲线，按你给的 ROI 目标自动加减出价与预算，不用你半夜起来改价。</p></div>
-      <div class="cap reveal"><div class="n">02</div><h3>批量建立计划</h3><p>一次生成一批，把素材 × 定向 × 出价的组合铺开测试，并自动补齐项目下的投放单元——不会出现「建了项目没单元」的空壳计划。</p></div>
-      <div class="cap reveal"><div class="n">03</div><h3>复制跑量计划</h3><p>识别真正能跑的那条计划，自动复制放大；同时关掉形同虚设的僵尸计划，把预算集中到有效的地方。</p></div>
-      <div class="cap reveal"><div class="n">04</div><h3>素材诊断</h3><p>逐个素材算激活成本，按「消耗 ÷ 激活」排序，直接揪出零激活的预算黑洞，并告诉你哪些素材值得加量。</p></div>
-      <div class="cap reveal"><div class="n">05</div><h3>素材生成与批量上传</h3><p>按数据结论产出新素材变体（同主题换钩子、换节奏），批量挂载进计划，让系统持续有新鲜素材可轮换。</p></div>
+      <div class="cap reveal"><div class="n">01</div><h3>自动出价与预算调整</h3><p>分钟级盯住每个计划的成本曲线，按你给的 ROI 目标自动加减出价与预算，不用你半夜起来改价。我们自己账户的平均激活成本 <b>¥19.67</b>，而表现最好的 5 个素材只要 <b>¥6.58–11.35</b>——中间这段差价，就是出价与预算分配能抢回来的空间。</p></div>
+      <div class="cap reveal"><div class="n">02</div><h3>批量建立计划</h3><p>一次生成一批，把素材 × 定向 × 出价的组合铺开测试，并自动补齐项目下的投放单元——不会出现「建了项目没单元」的空壳计划（我们主账户 40 个项目里曾积了 <b>35 个空壳</b>）。</p></div>
+      <div class="cap reveal"><div class="n">03</div><h3>复制跑量计划</h3><p>识别真正能跑的那条计划，自动复制放大；同时关掉形同虚设的僵尸计划，把预算集中到有效的地方。空转的账户占 <b>78%</b>，钱不该继续摊在它们身上。</p></div>
+      <div class="cap reveal"><div class="n">04</div><h3>素材诊断</h3><p>逐个素材算激活成本，按「消耗 ÷ 激活」排序，直接揪出零激活的预算黑洞，并告诉你哪些素材值得加量。实测 42 个素材里有 <b>28 个零激活</b>，吃掉了 <b>40%</b> 的消耗。</p></div>
+      <div class="cap reveal"><div class="n">05</div><h3>素材生成与批量上传</h3><p>按数据结论产出新素材变体（同主题换钩子、换节奏），批量挂载进计划，让系统持续有新鲜素材可轮换。用户平均只看 <b>2.15 秒</b>，钩子必须在前两秒成立。</p></div>
       <div class="cap reveal"><div class="n">06</div><h3>跨账户报表与数据分析</h3><p>41 个账户归拢成一张表，自动算出消耗、点击率、激活率、激活成本，并跨账户找出谁是真正的主力、谁在空转。</p></div>
-      <div class="cap reveal"><div class="n">07</div><h3>ROI 目标优化方案</h3><p>你只给一个目标（比如「ROI 干到 3」），它反推该收紧哪个人群、该换哪批素材、该怎么做出价，并落地执行。</p></div>
+      <div class="cap reveal"><div class="n">07</div><h3>ROI 目标优化方案</h3><p>你只给一个目标（比如「ROI 干到 3」），它反推该收紧哪个人群、该换哪批素材、该怎么做出价，并落地执行。前提是回传链路是通的——<b>回传没通时所有 ROI 指标都是 0</b>，任何优化都无从验证。</p></div>
       <div class="cap reveal" style="background:linear-gradient(165deg,rgba(74,125,255,.13),rgba(124,77,255,.06));border-color:var(--line)">
         <div class="n" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none">★</div>
         <h3>每天 9:00，日报自动推到你微信</h3>
